@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>支付</h1>
+			</header>
+			<section class="flex_1 mt01 overflow_auto bg-f7 font24r relative">
+				<div class="Con l-pad20 bg-fff">
+					<div class="hgt09rem between-center">
+						<span class="">支付金额</span>
+						<div class="center-end only_line wid47rem" v-cloak>{{info.money}}</div>
+					</div>
+				</div>
+				<div class="hgt06rem font-w6 l-pad20 center">
+					支付方式
+				</div>
+				<div class="Con l-pad20 bg-fff">
+					<label @click="setType(0)" class="hgt09rem border-b-eee between-center">
+						<p class="center"><img class="wid04rem mr02" src="../img/slice/icon_wechatPay.png"/>微信支付</p>
+						<label class=" color-orange pv01">
+            				<input type="radio" name="payWay" value="2" class="hide" />
+            				<span class="check_round_small"></span>
+            			</label>
+					</label>
+					<label @click="setType(1)" class="hgt09rem between-center">
+						<p class="center"><img class="wid04rem mr02" src="../img/slice/icon_zfbPay.png"/>支付宝</p>
+						<label class=" color-orange pv01">
+            				<input type="radio" name="payWay" value="2" class="hide" />
+            				<span class="check_round_small"></span>
+            			</label>
+					</label>
+				</div>
+			</section>
+			<div class="bg-ffa127 wid100 font24r color-fff between hgt08rem">
+				<button onclick="goBack()" class="hgt08rem bg-fff color-ffa127 wid50">取消</button>
+				<button @click="paySubmit" class="hgt08rem wid50 bg-ffa127 color-fff">确定</button>
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	
+	var app = new Vue({
+		el: '#app',
+		data: {
+			info: {},
+			type: null,
+			payParam: {}
+		},
+		methods: {
+			getInfo: function(){
+				this.info = GetRequest()
+			},
+			setType: function(type){
+				app.type = type
+			},
+			checkForm: function(){
+				if(!app.type && app.type != 0){
+					go_alert2('请选择支付方式')
+					return false
+				}
+				return true
+			},
+			paySubmit: function () {
+				if(app.checkForm()){
+					$.ajax({
+						type: 'post',
+						url: host + 'member.pay',
+						data: {
+							iBalanceID: this.info.id,
+							sPayType: this.type
+						},
+						success: function (res) {
+							if (res.success) {
+								var param = res.data
+								var u = navigator.userAgent;
+								var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+								var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+								if (isAndroid) {
+									if (app.type == 0) {
+										WebViewJavascriptBridge.wxPayAction(param);
+									} else {
+										WebViewJavascriptBridge.aliPayAction(JSON.stringify(param))
+									}
+								}
+								if (isiOS) {
+								    try {
+								        if (app.type == 0) {
+								            webkit.messageHandlers.wxPayAction.postMessage(param);
+								        } else {
+								            webkit.messageHandlers.aliPayAction.postMessage(param);
+								        }
+								    }
+								    catch (e) { }
+								}
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			},
+			// getPayParam: function(){
+			// 	$.ajax({
+			// 		type: 'post',
+			// 		url: host + 'member.pay',
+			// 		data: {
+			// 			iBalanceID: this.info.id,
+			// 			sPayType: this.type
+			// 		},
+			// 		success: function(res){
+			// 			app.payParam = res.data
+			// 		}
+			// 	})
+			// },
+			payAjax: function () {
+				
+			}
+		},
+		mounted: function(){
+			this.getInfo()
+		}
+	})
+
+</script>
+ 
+</html>

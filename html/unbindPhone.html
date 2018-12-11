@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="hgt07rem border-b-eee l-pad20 bg-fff between-center">
+				<div class="wid12rem center">
+					<img class="wid014rem" src="../img/slice/icon-back.png"/>
+				</div>
+				<h3 class="font28r">解绑手机号</h3>
+				<div class="wid12rem font-w6 font22r center-end">
+					
+				</div>
+			</header>
+			<section class="flex_1 overflow_auto font24r relative">
+				<div class="Con">
+					<div style="box-shadow: none;" class="LoginForm m-t-120r bg-fff">
+						<p class="color-666">手机号</p>
+						<div class="inputBox border-b-eee">
+							<input v-model="submitData.sPhone" readonly class="font28r" type="number" placeholder="请填写手机号码" value="" />
+						</div>
+						<p class="color-666 mt03">验证码</p>
+						<div class="inputBox between-center border-b-eee">
+							<input v-model="sValidate" type="text" class="wid25rem font28r" placeholder="请输入验证码" value="" />
+							<p class="grayline"></p>
+							<button @click="getCode" id="getCode" class="color-ffa127">获取验证码</button>
+						</div> 
+						<div class="text-center m-t-90r">
+							<input @click="nextStep" type="submit" class="keepBtn font24r" value="下一步" name="" />
+						</div>
+					</div>
+				</div>
+			</section>
+	      	<!--手机号已注册-->
+			<div style="z-index: 1;" class="markBox2 hide font24r">
+	            <div style="width: 4.7rem;" class="mark overflow_hide">
+	            	<div class="Con text-center color-333 border-b-eee p-a-50r bg-fff">
+	            		该手机号已注册，可直接登录
+	            	</div>
+	            	<div class="hgt08rem bg-fff around-center ">
+	            		<button onclick="$('.markBox2').hide()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+	            		<button class="wid50 color-fff hgt08rem color-000 font24r">登录</button>
+	            	</div>
+	            </div>
+	      	</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			submitData: {sPhone: location.search.substring(1)},
+			sCode: '',
+			sValidate: ''
+		},
+		methods: {
+			checkForm: function(){
+				if(!phoneReg.test(app.submitData.sPhone)){
+					go_alert2('请输入正确的手机号')
+					return false
+				}
+				if(app.sValidate == ''){
+					go_alert2('请输入手机验证码')
+					return false
+				}
+				return true
+			},
+			getCode: function(){
+				if(!phoneReg.test(app.submitData.sPhone)){
+					go_alert2('请输入正确的手机号')
+				} else {
+					codeDownTime($("#getCode"))
+					$.ajax({
+						type: 'post',
+						url: host + 'main.oldcode',
+						data: {'sPhone': app.submitData.sPhone},
+						success: function(res){
+							if(res.success){
+								app.sCode = res.data
+							}
+							else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			},
+			nextStep: function(){
+				if(app.checkForm()){
+					console.log(1)
+					$.ajax({
+						type: 'post',
+						url: host + 'member.codevali',
+						data: {sPhone: app.submitData.sPhone, sValidate: app.sValidate},
+						success: function(res){
+							if(res.success){
+								location.href = 'rebindPhone.html?' + app.submitData.sPhone
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+					// location.href = 'rebindPhone.html'
+				}
+			}
+		},
+		mounted: function(){
+
+		}
+	})
+
+
+
+	// $(function(){
+	// 	function secondCount() {
+    //         var i = 60;
+    //         var time = setTimeout(countDown, 0)
+    //         function countDown() {
+    //             $("#getCode").attr("disabled", true);
+    //             $("#getCode").html(i + "秒后获取");
+    //             if (i == 0) {
+    //                 $("#getCode").removeAttr("disabled");
+    //                 $("#getCode").html("获取验证码");
+    //                 clearTimeout(time);
+    //             } else {
+    //                 setTimeout(countDown, 1000);
+    //             }
+    //             i--;
+    //         }
+    //     }
+	// 	$('#getCode').click(function(event){
+	// 		event.preventDefault();
+	// 		secondCount();
+	// 	});
+	// })
+</script>
+ 
+</html>

@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column bg-f7">
+			<div class="indexHeader relative">
+				<div style="background-color: #fff;" class="indexTitle border-b-eee relative">
+					<a href="javascript:;" class="indexAddr"></a>
+					<a class="text-center block" href="javascript:;">
+						<span class="font28r color-000">社区</span>
+					</a>
+					<!--有未读的： noRead-->
+					<a :class="unReadCount>0 ? 'indexMsg noRead' : 'indexMsg'" onclick="isWeixin('mail.html')">
+						<img src="../img/slice/icon-msg.png" alt="" />
+					</a>
+				</div>
+			</div>
+			<div class="flex_1 overflow_auto">
+				<div class="mb01 Con bg-fff l-pad20">
+					<h4 class="hgt08rem font26r font-w6 center">生活服务</h4>
+				</div>
+				<div class="l-pad20 bg-fff between-center hgt17rem flex_dom flex_item_mid flex_item_between">
+					<a onclick="isWeixin('sign.html')" class="flex_1 hgt17rem column-center-b p-t-35r p-b-35r">
+						<img class="wid05rem" src="../img/slice/icon_calendar.png"/>
+						<span class="font22r">签到</span>
+					</a>
+					<p class="grayline"></p>
+					<a v-cloak v-if="bIsActivityOpen" @click="avtivity" href="javascript:void(0)" class="flex_1 hgt17rem column-center-b p-t-35r p-b-35r">
+						<img class="wid05rem" src="../img/slice/icon_fortune.png"/>
+						<span class="font22r">幸运大抽奖</span>
+					</a>
+					<p v-if="bIsActivityOpen" class="grayline"></p>
+					<a onclick="isWeixin('scoreCharts.html')" class="flex_1 hgt17rem column-center-b p-t-35r p-b-35r">
+						<img class="wid05rem" src="../img/slice/icon_rank.png"/>
+						<span class="font22r">积分排行榜</span>
+					</a>
+				</div>
+				<div class="mt02 Con bg-fff l-pad20 overflow_hide">
+					<a href="communityArticle.html" class="hgt08rem font26r l-h-08rem overflow_hide flex_dom flex_item_between flex_item_mid">
+						<span class="font-w6 l-h-08rem">社区资讯</span>
+						<span style="float: right;font-size: 12px;line-height: 12px;" class="iconRightY">更多</span>
+					</a>
+				</div>
+				<div class="con mt01 font24r">
+					<a v-for="(item, index) in articleList" :href="'communityArticleDetail.html?' + 'id=' + item.ID" class="zxList block p-b-20r bg-fff mb01 l-pad20">
+						<h4 class="hgt08rem font26r only_line wid100 font-w6 l-h-08rem" v-cloak>{{item.sTitle}}</h4>
+						<div class="hgt34rem wid100 coverImg" :style="'background-image: url(' + item.sImageSrc + ')'"></div>
+						<div class="between-center hgt06rem">
+							<p class="wid37rem" v-cloak>{{item.sTag}}</p>
+							<div class="center">
+								<img class="wid03rem mr01" src="../img/slice/icon_comment.png"/>
+								<span v-cloak>{{item.iReplyCount}}</span>
+							</div>
+						</div>
+						<p class="color-999" v-text="tTime(item.dCreateTime)"></p>
+					</a>
+					<div style="top:0;position:relative; height: 2.5rem;" class="no_data m-t-90r">
+                        <p class="color-999">暂无数据</p>
+                    </div>
+				</div>
+			</div>
+			<footer class="curFooter flex_dom">
+				<a class="flex_1" href="index.html">首页</a>
+				<a class="flex_1" onclick="isWeixin('distance.html')">行程</a>
+				<a class="flex_1 active" href="javascript:;">社区</a>
+				<a class="flex_1" onclick="isWeixin('myInfo.html')">我的</a>
+			</footer>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script type="text/javascript" src="../lib/touchSelect.js"></script>	
+<script type="text/javascript">
+	getUserInfo()
+	// if(!localStorage.userInfo || localStorage.userInfo == "{}"){
+	// 	bindPhone()
+	// }
+	var app = new Vue({
+		el: "#app",
+		data: {
+			activity: {},
+			bIsActivityOpen: false,
+			articleList: [],
+			unReadCount: 0,
+			userInfo: JSON.parse(localStorage.userInfo)
+		},
+		methods: {
+			avtivity: function(){
+				if(app.activity.iStatus == 1){
+					go_alert2("该活动已暂停，开放后即可进入")
+				} else if(app.activity.iStatus == 2) {
+					go_alert2("该活动已结束，开放后即可进入")
+				}
+				else {
+					location.href = "activity.html"
+				}
+			},
+			isActivityOpen: function(start,end){
+				var today = new Date().valueOf()
+				start = new Date(start.replace(/-/g,'/')).valueOf()
+				end = new Date(end.replace(/-/g,'/')).valueOf()
+				console.log(start,today,end)
+				if(start < today && today < end){
+					app.bIsActivityOpen = true
+				} else{
+					app.bIsActivityOpen = false
+				}
+			},
+			tTime: function(time){
+				time = time.split(' ')[0].replace(/-/g,'.')
+				return time	
+			}
+		},
+		mounted: function(){
+			console.log()
+			$.ajax({
+				type: 'post',
+				url: host + 'act.get',
+				data: {iMemberID: this.userInfo.ID},
+				success: function(res){
+					app.activity = res.data.Activity
+					app.isActivityOpen(app.activity.sStartTime,app.activity.sStopTime)
+				}
+			})
+			$.ajax({
+				type: 'post',
+				url: host + 'article.getshowlist',
+				success: function(res){
+					app.articleList = res.data
+				}
+			})
+			$.ajax({
+				type: 'post',
+				url: host + 'msg.unreadcount',
+				data: {iMemberID: JSON.parse(localStorage.userInfo).ID},
+				success: function(res){
+					app.unReadCount = res.data
+				}
+			})
+		}
+	})
+
+	//判断是否微信登录
+	function isWeixin(href) {
+	    if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+	        $.ajax({
+	            type: 'post',
+	            url: host + 'member.wechatlogin',
+	            data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+	            success: function (res) {
+	                //if (res.success) {
+	                if (res.code == 403) {
+	                    go_alert2('账号审核中，请耐心等待', setTimeout(function () {
+	                        //location.href = 'login.html'
+	                        return
+	                    }, 2000))
+	                }
+	                else if (res.code == 404) {
+	                    localStorage.removeItem('userInfo');
+	                    bindPhone()
+	                }
+	                else if (res.data.bIsReviewed == 1) {
+	                    var userInfo = res.data
+	                    localStorage.userInfo = JSON.stringify(userInfo)
+	                    location.href = href
+	                }
+
+	            }
+	        })
+	    } else {
+	        location.href = href
+	    }
+	}
+
+</script>
+ 
+</html>

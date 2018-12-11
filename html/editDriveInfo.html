@@ -1,0 +1,581 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>编辑车主认证</h1>
+			</header>
+			<section class="main-wrap flex_1 overflow_auto font24r relative">
+				<div class="Con">
+					<form action="" method="post" class="bg-fff l-pad20">
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>社区</span>
+							<div class="center-end wid47rem">
+								<div class="wid33 p-r-10r p-l-10r border-r-eee">
+									<input @focus="openSearchTab('iRegionID')" type="text" name="" placeholder="区县" class="iRegionID iconBot only_line placeholder-999 font24r text-center wid100 p-r-10r" value="" />
+								</div>
+								<div class="wid33 p-r-10r p-l-10r border-r-eee">
+									<input @focus="openSearchTab('iStreetID')" type="text" name=""  placeholder="街道" class="iStreetID iconBot only_line  placeholder-999 font24r otherChoice2 text-center wid100 p-r-10r" value="" />
+								</div>
+								<div class="wid33 p-r-10r p-l-10r">
+									<input @focus="openSearchTab('iCommunityID')" type="text" name=""  placeholder="社区" class="iCommunityID iconBot only_line  placeholder-999 otherChoice3 font24r text-center wid100 p-r-10r" value="" />
+								</div>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>车辆品牌</span>
+							<div class="center-end wid47rem">
+								<input @focus="openSearchTab('sVehicleBrand')" type="text" name="" placeholder="车辆品牌" class="sVehicleBrand placeholder-999 otherChoice4 font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>车辆型号</span>
+							<div class="center-end wid47rem">
+								<input @focus="openSearchTab('sVehicleModel')" type="text" name="" placeholder="车辆型号" class="sVehicleModel placeholder-999 otherChoice5 font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>车牌号</span>
+							<div class="center-end wid47rem">
+								<div class="wid33 p-r-10r p-l-10r border-r-eee">
+									<input @focus="openSearchTab('sVehicleAscription')" type="text" name="" placeholder="所属地" class="sVehicleAscription wid100 iconBot only_line placeholder-999 font24r text-center" value="" />
+								</div>
+								<div class="flex_1 p-l-10r">
+									<input v-model="submitData.sLicensePlate" type="text" name=""  placeholder="请填写你的车牌号" class="sLicensePlate only_line placeholder-999 font24r text-right wid100" value="" />
+								</div>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>车辆颜色</span>
+							<div class="center-end wid47rem">
+								<input  @focus="openSearchTab('sVehicleColor')" type="text" name=""  placeholder="车辆颜色" class="sVehicleColor placeholder-999 otherChoice7 font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>姓名</span>
+							<div class="center-end wid47rem">
+								<input v-model="submitData.sName" type="text" placeholder="请填写你的姓名" class="sName color-000 font24r text-right wid100" value="" />
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>性别</span>
+							<div class="center-end wid47rem gender">
+								<label @click="getGender(1)" class="mt02 color-ffa127 mr03"><input :checked="submitData.iGender == 1" type="radio" name="gender" /><span style="vertical-align: text-top;" class="check_round_small"></span><i class="ml01 color-666">男</i></label>
+								<label @click="getGender(2)" class="mt02 color-ffa127"><input :checked="submitData.iGender == 2" type="radio" name="gender" /><span style="vertical-align: text-top;" class="check_round_small"></span><i class="ml01 color-666">女</i></label>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red"></i>年龄</span>
+							<div class="center-end wid47rem">
+								<input v-model="submitData.iAge" type="number" placeholder="请填写你的年龄" class="color-666 font24r text-right wid100" value="" />
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666"><i class="color-red">*</i>职业</span>
+							<div class="center-end wid47rem">
+								<input @focus="openSearchTab('sOccupation')" type="text" name="" placeholder="职业" class="sOccupation placeholder-999 otherChoice7 font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666"><i class="color-red"></i>兴趣</p>
+							<textarea v-model="submitData.sInterest" class="regTxt" name="" placeholder="请填写你的兴趣"></textarea>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666"><i class="color-red">*</i>身份证照片(手持)</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sIDCardFront ? submitData.sIDCardFront :'../img/slice/cert.png'"/>
+										<span @click='uploadImage("sIDCardFront")' class="flieline"></span>
+										<!-- <img class="closeImg wid03rem" src="../img/slice/icon_close.png"/> -->
+									</div>
+									<span class="color-666">上传身份证正面</span>
+								</div>
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sIDCardBack ? submitData.sIDCardBack :'../img/slice/newfile.png'"/>
+										<span @click='uploadImage("sIDCardBack")' class="flieline"></span>
+										<!--<img class="closeImg wid03rem" src="../img/slice/icon_close.png"/>-->
+									</div>
+									<span class="color-666">上传身份证反面</span>
+								</div>
+							</div>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666"><i class="color-red">*</i>上传行驶证照片</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sPermitFront ? submitData.sPermitFront :'../img/slice/cert.png'"/>
+										<span @click='uploadImage("sPermitFront")' class="flieline"></span>
+										<!-- <img class="closeImg wid03rem" src="../img/slice/icon_close.png"/> -->
+									</div>
+									<span class="color-666">上传行驶证正面</span>
+								</div>
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sPermitBack ? submitData.sPermitBack :'../img/slice/newfile.png'"/>
+										<span @click='uploadImage("sPermitBack")' class="flieline"></span>
+										<!--<img class="closeImg wid03rem" src="../img/slice/icon_close.png"/>-->
+									</div>
+									<span class="color-666">上传行驶证反面</span>
+								</div>
+							</div>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666"><i class="color-red">*</i>上传驾驶证照片</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sLicenseFront ? submitData.sLicenseFront :'../img/slice/cert.png'"/>
+										<span @click='uploadImage("sLicenseFront")' class="flieline"></span>
+										<!-- <img class="closeImg wid03rem" src="../img/slice/icon_close.png"/> -->
+									</div>
+									<span class="color-666">上传驾驶证正面</span>
+								</div>
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sLicenseBack ? submitData.sLicenseBack :'../img/slice/newfile.png'"/>
+										<span @click='uploadImage("sLicenseBack")' class="flieline"></span>
+										<!--<img class="closeImg wid03rem" src="../img/slice/icon_close.png"/>-->
+									</div>
+									<span class="color-666">上传驾驶证反面</span>
+								</div>
+							</div>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666"><i class="color-red"></i>上传商业保单照片</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="submitData.sCommercialInsurance ? submitData.sCommercialInsurance :'../img/slice/newfile.png'"/>
+										<span @click='uploadImage("sCommercialInsurance")' class="flieline"></span>
+										<!-- <img class="closeImg wid03rem" src="../img/slice/icon_close.png"/> -->
+									</div>
+									<span class="color-666">上传</span>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				
+			</section>
+			<div @click="submit" class="bg-ffa127 font24r color-fff around-center hgt08rem">
+				提交审核
+			</div>
+			<!--平台条款弹窗-->
+			<div style="z-index: 1;" class="markBox hide font22r">
+	            <div style="width: 4.7rem;background-color:#FFFFFF;" class="mark l-pad20A">
+	            	<div style="max-height: 6rem;" class="l-h-04rem color-666 Con overflow_auto">
+	            		<p class="text-center font30r color-000">平台条款</p>
+	            		1.读取后台设置的汇率
+						2.最少兑换量由后台设置，当前可兑换量读取金币总数
+						3.输入兑换金币数量后自动读取汇率，显示可获得的HEC数量（精确到小数点后两位，多出的位数四舍五入），金币数量必须为大于0的整数
+						4.点击提交时，判断金币数量，如果小于最小兑换量提示“兑换金币数量过少”，2s后提示自动消失；如果大于当前可兑换数量，提示“兑换
+	            	</div>
+	            	<img onclick="$('.markBox').hide()" class="picClose" src="../img/slice/icon_close.png"/>
+	            </div>
+			  </div>
+			  <!-- 搜索页面 -->
+			<div class="searchTab font24r">
+				<p class="relative hgt07rem flex_dom flex_item_mid flex_item_center">
+					<a @click="closeSearchTab" class="closeSearchTab" href="javascript:;"></a>
+					<input v-model="userInput" placeholder="请输入搜索内容" class="bg-f7 wid70 p-v-10r radius02r p_both20r font24r" type="text">
+				</p>
+				<div style="overflow: auto;padding-bottom: .7rem" class="hgt_full">
+					<p class="hgt04rem"></p>
+                    <p v-if="searchTabResult.length <= 0 && !userInput" @click="userChoose(item)" v-for="(item,index) in searchTabInit" class="hgt065rem l-h-065rem p_both20r border-b-eee">{{item.sName || item.sContent || item.sColor}}</p>
+                    <p v-if="searchTabResult.length" @click="userChoose(item)" v-for="(item,index) in searchTabResult" class="hgt065rem l-h-065rem p_both20r border-b-eee">{{item.sName || item.sContent || item.sColor}}</p>
+				</div>
+			</div>
+
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			reginit: {}, 		// 所有初始化数据
+			searchTabInit: [], 		// 搜索初始化数据
+			searchTabResult: [],		// 搜索结果
+			userInput: "",			// 用户输入
+			category: "", 		// 用户选择哪个模块
+			submitData: {
+				sIDCardFront: "",
+				sIDCardBack: "",
+				sPermitFront: "",
+				sPermitBack: "",
+				sLicenseFront: "",
+				sLicenseBack: "",
+				iMemberID: JSON.parse(localStorage.userInfo).ID,
+				iGender: null,
+			},
+			memberInit: {}
+		},
+		methods: {
+			closeSearchTab: function(){
+				$(".searchTab").hide()
+				app.userInput = ""
+				app.searchTabResult = []
+			},
+			openSearchTab: function(category){
+				$(".searchTab").show()
+				$(".searchTab input").focus()
+				app.judgeCategory(category)
+			},
+			userChoose: function(item){
+				app.setUserChoose(item)
+				app.closeSearchTab()
+			},
+			judgeCategory: function(category){
+				app.category = category
+				switch(category)
+				{
+					case 'iRegionID':
+						app.searchTabInit = app.reginit.RegionList
+						break;
+					case 'iStreetID':
+						if($(".iRegionID").val() == ''){
+							go_alert2("请先选择区/县")
+							app.closeSearchTab()
+						}
+						else{
+							app.getSteetList()
+						}
+						break;
+					case 'iCommunityID':
+						if($(".iStreetID").val() == ''){
+							go_alert2("请先选择街道")
+							app.closeSearchTab()
+						}
+						else{
+							app.getiCommunityIDList()
+						}
+						break;
+					case 'sVehicleBrand':
+						app.searchTabInit = app.reginit.CarBrandList
+						break;
+					case 'sVehicleModel':
+						if($(".sVehicleBrand ").val() == ''){
+							go_alert2("请先选择车辆品牌")
+							app.closeSearchTab()
+						} else if (!$('.sVehicleBrand')[0].id) {
+						    go_alert2('请重新选择车辆品牌')
+						    app.closeSearchTab()
+						}
+						else{
+							app.getCarModelList()
+						}
+						break;
+					case 'sVehicleAscription':
+						app.searchTabInit = app.reginit.LicensePlateLocationList
+						break;
+					case 'sVehicleColor':
+						app.searchTabInit = app.reginit.VehicleColorList
+						break;
+					case 'sOccupation':
+						app.searchTabInit = app.reginit.OccupationList
+						break;
+				}
+			},
+			setUserChoose: function (item) {
+			    $("." + app.category).val(item.sName || item.sContent || item.sColor)
+			    // Vue.set(app.submitData, app.category, item.ID)
+			    // console.log(app.category)
+			    if ((app.category == 'iRegionID') || (app.category == 'iStreetID') || (app.category == 'iCommunityID')) {
+			        Vue.set(app.submitData, app.category, item.ID)
+			    }
+			    if (app.category == 'iRegionID') {
+			        app.submitData.iStreetID = null
+			        app.submitData.iCommunityID = null
+			        $('.iStreetID').val('')
+			        $('.iCommunityID').val('')
+			    }
+			    if (app.category == 'iStreetID') {
+			        app.submitData.iCommunityID = null
+			        $('.iCommunityID').val('')
+			    }
+			    if (app.category == 'sVehicleBrand') {
+			        app.submitData.sVehicleModel = ''
+			        $('.sVehicleModel').val('')
+			    }
+			    if ((app.category == 'sVehicleBrand') || (app.category == 'sVehicleModel') || (app.category == 'sOccupation')) {
+			        Vue.set(app.submitData, app.category, item.sName)
+			    }
+			    if ((app.category == 'sVehicleBrand')) {
+			        $('.sVehicleBrand')[0].id = item.ID
+			    }
+			    if (app.category == 'sVehicleAscription') {
+			        Vue.set(app.submitData, app.category, item.sContent)
+			    }
+			    if (app.category == 'sVehicleColor') {
+			        Vue.set(app.submitData, app.category, item.sColor)
+			    }
+			},
+			setUserInit: function(){
+				var memberInitData = app.memberInit
+				// 区
+				$(".iRegionID").val(memberInitData.sRegionName)
+				app.submitData.iRegionID = memberInitData.iRegionID
+				// 街道
+				$(".iStreetID").val(memberInitData.sStreetName)
+				app.submitData.iStreetID = memberInitData.iStreetID
+				// 社区
+				$(".iCommunityID").val(memberInitData.sCommunityName)
+				app.submitData.iCommunityID = memberInitData.iCommunityID
+				// 车辆品牌
+				$(".sVehicleBrand").val(memberInitData.sVehicleBrand)
+				app.submitData.sVehicleBrand = memberInitData.sVehicleBrand
+				// 车辆型号
+				$(".sVehicleModel").val(memberInitData.sVehicleModel)
+				app.submitData.sVehicleModel = memberInitData.sVehicleModel
+				// 车牌号所属地
+				$(".sVehicleAscription").val(memberInitData.sVehicleAscription)
+				app.submitData.sVehicleAscription = memberInitData.sVehicleAscription
+				// 车牌号
+				$(".sLicensePlate").val(memberInitData.sLicensePlate)
+				app.submitData.sLicensePlate = memberInitData.sLicensePlate
+				// 车辆颜色
+				$(".sVehicleColor ").val(memberInitData.sVehicleColor )
+				app.submitData.sVehicleColor  = memberInitData.sVehicleColor 
+				// 姓名
+				$(".sName ").val(memberInitData.sName )
+				app.submitData.sName  = memberInitData.sName 
+				// 性别
+				app.submitData.iGender  = memberInitData.iGender 
+				// 年龄
+				app.submitData.iAge = memberInitData.iAge
+				// 职业
+				$(".sOccupation").val(memberInitData.sOccupation  )
+				app.submitData.sOccupation = memberInitData.sOccupation  
+				// 兴趣
+				$(".regTxt").val(memberInitData.sInterest)
+				app.submitData.sInterest = memberInitData.sInterest  
+				//身份证
+				app.submitData.sIDCardFront = memberInitData.sIDCardFront  
+				app.submitData.sIDCardBack = memberInitData.sIDCardBack  
+				// 行驶证
+				app.submitData.sPermitFront = memberInitData.sPermitFront  
+				app.submitData.sPermitBack = memberInitData.sPermitBack  
+				// 驾驶证
+				app.submitData.sLicenseFront = memberInitData.sLicenseFront  
+				app.submitData.sLicenseBack = memberInitData.sLicenseBack 
+				// 保单
+				app.submitData.sCommercialInsurance = memberInitData.sCommercialInsurance 
+			},
+			getSteetList: function(){
+				$.ajax({
+					type: 'post',
+					data: {iRegionID: app.submitData.iRegionID},
+					url: host + "loc.getstreetlist",
+					success: function(res){
+						app.searchTabInit = res.data
+					}
+				})
+			},
+			getiCommunityIDList: function(){
+				$.ajax({
+					type: 'post',
+					data: {iStreetID: app.submitData.iStreetID},
+					url: host + "loc.getcommunitylist",
+					success: function(res){
+						app.searchTabInit = res.data
+					}
+				})
+			},
+			getCarModelList: function(){
+				$.ajax({
+					type: 'post',
+					data: {iCarTypeID: $('.sVehicleBrand')[0].id},
+					url: host + "car.getmodel",
+					success: function(res){
+						app.searchTabInit = res.data
+					}
+				})
+			},
+			getGender: function(iGender){
+				app.submitData.iGender = iGender
+			},
+			checkForm: function(){
+				console.log(app.submitData)
+				if(!app.submitData.iRegionID && app.submitData.iRegionID != 0){
+					go_alert2("请选择区/县")
+					return false
+				}
+				if(!app.submitData.iStreetID && app.submitData.iStreetID != 0){
+					go_alert2("请选择街道")
+					return false
+				}
+				if(!app.submitData.iCommunityID && app.submitData.iCommunityID != 0){
+					go_alert2("请选择社区")
+					return false
+				}
+				if(!app.submitData.sVehicleBrand){
+					go_alert2("请选择车辆品牌")
+					return false
+				}
+				if(!app.submitData.sVehicleModel){
+					go_alert2("请选择车辆型号")
+					return false
+				}
+				if(!app.submitData.sVehicleAscription){
+					go_alert2("请选择车牌所属地")
+					return false
+				}
+				var sLicensePlateReg = /^[A-Z]{1}[A-Z0-9]{4}[A-Z0-9]{1}$/
+				if(!app.submitData.sLicensePlate || !sLicensePlateReg.test(app.submitData.sLicensePlate)){
+					go_alert2("请输入正确的车牌号")
+					return false
+				}
+				if(!app.submitData.sVehicleColor){
+					go_alert2("请选择车辆颜色")
+					return false
+				}
+				if(!app.submitData.sName){
+					go_alert2("请输入真实姓名")
+					return false
+				}
+				if(!app.submitData.iGender){
+					go_alert2("请选择性别")
+					return false
+				}
+				if(!app.submitData.sOccupation){
+					go_alert2("请选择职业")
+					return false
+				}
+				if(!app.submitData.sIDCardFront || !app.submitData.sIDCardBack){
+					go_alert2('请上传身份证照片')
+					return false
+				}
+				if(!app.submitData.sPermitFront || !app.submitData.sPermitBack){
+					go_alert2('请上传行驶证照片')
+					return false
+				}
+				if(!app.submitData.sLicenseFront || !app.submitData.sLicenseBack){
+					go_alert2('请上传驾驶证照片')
+					return false
+				}
+				return true
+			},
+			submit: function(){
+				// app.checkForm()
+				if(!app.checkForm()){
+					return
+				} else {
+					$.ajax({
+						type: 'post',
+						url: host + 'member.modify',
+						data: app.submitData,
+						success: function(res){
+							if(res.success){
+							    go_alert2(res.message)
+							    localStorage.removeItem('userInfo')
+							    localStorage.removeItem('wxInfo')
+								setTimeout(function () {
+									history.go(-2)
+									location.reload(force)
+								},2000)
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			},
+			uploadImage: function(type){
+				var u = navigator.userAgent;
+				var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+				var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+				if (isAndroid) {
+					WebViewJavascriptBridge.uploadImage(type)
+				}
+				if (isiOS) {
+				    try {
+				        webkit.messageHandlers.uploadImage.postMessage(type)
+				    }
+				    catch (e) { }
+				}
+			},
+			getUserInit: function () {
+				$.ajax({
+					type: 'post',
+					url: host + "member.get",
+					data: { iMemberID: JSON.parse(localStorage.userInfo).ID },
+					success: function (res) {
+                        console.log(res.data)
+						app.memberInit = res.data
+						app.setUserInit()
+					}
+				})
+			},
+			
+		},
+		mounted: function(){
+			// this.submitData.sPhone = location.search.substring(1)
+			$.ajax({
+				type: 'post',
+				url: host + "member.reginit",
+				success: function(res){
+					app.reginit = res.data
+				}
+			})
+			this.getUserInit()
+			
+		},
+		watch: {
+			userInput: function(){
+				app.searchTabResult = []
+				if(app.userInput != ""){
+					for(item of app.searchTabInit){
+						var match = item.sName || item.sContent || item.sColor
+						if(match.indexOf(app.userInput) >= 0){
+							app.searchTabResult.push(item)
+						}
+					}
+				}
+				
+			}
+		}
+	})
+
+	function getImgSrc(type, imgSrc){
+		app.submitData[type] = imgSrc
+	}
+
+</script>
+ 
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>提现</h1>
+			</header>
+			<section class="flex_1 mt01 overflow_auto bg-f7 font24r relative">
+				<div class="Con l-pad20 bg-fff">
+					<div class="hgt09rem font-w6 between-center">
+						提现金额
+					</div>
+					<div class="wid100 p-t-20r p-b-35r border-b-eee center">
+						<span class="font48r lh1">¥</span>
+						<input v-model="dMoney" type="number" class="font48r ml01 lh1" placeholder="" name="" id="" value="" />
+					</div>
+					<div class="hgt09rem between-center">
+						<div class="center wid50">
+							可用余额：¥<span class="color-666" v-cloak>{{dTipBalance}}</span>
+						</div>
+						<div class="center-end color-red">
+							<img class="wid026rem" src="../img/slice/icon_notice.png"/>
+							<span>1~2个工作日可到账</span>
+						</div>
+						
+					</div>
+				</div>
+				<div class="hgt06rem font-w6 l-pad20 center">
+					提现到
+				</div>
+				<div class="Con l-pad20 bg-fff">
+					<label @click="choosePay(0)" class="hgt09rem border-b-eee between-center">
+						<p class="center"><img class="wid04rem mr02" src="../img/slice/icon_wechatPay.png"/>微信支付</p>
+						<label class=" color-orange pv01">
+            				<input type="radio" name="payWay" value="2" class="hide" />
+            				<span class="check_round_small"></span>
+            			</label>
+					</label>
+					<label @click="choosePay(1)" class="hgt09rem between-center">
+						<p class="center"><img class="wid04rem mr02" src="../img/slice/icon_zfbPay.png"/>支付宝</p>
+						<label class=" color-orange pv01">
+            				<input type="radio" name="payWay" value="2" class="hide" />
+            				<span class="check_round_small"></span>
+            			</label>
+					</label>
+				</div>
+				<div v-cloak v-if="iType == 1" class="p_both20r bg-fff">
+					<div class="hgt09rem border-b-eee between-center border-t-eee flex_dom flex_item_mid font24r">
+						<p class="center">支付宝账号</p>
+						<input v-model="sAlipayAccount" type="text" class="placeholderccc flex_1 text-right font24r" placeholder="请输入支付宝账号">
+					</div>
+					<div class="hgt09rem border-b-eee between-center flex_dom flex_item_mid font24r">
+						<p class="center">支付宝账号真实姓名</p>
+						<input v-model="sAlipayRealName" type="text" class="placeholderccc flex_1 text-right font24r" placeholder="请输入支付宝账号真实姓名">
+					</div>
+				</div>
+				<div class="wid100 m-t-30r around-center hgt14rem">
+					<button @click="submit" class="keepBtn">确认提现</button>
+				</div>
+			</section>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			dMoney: "",
+			iType: null,
+			dTipBalance: null,
+			sAlipayAccount: '',
+			sAlipayRealName: ''
+		},
+		methods: {
+			choosePay: function(iType){
+				app.iType = iType
+				if(iType == 0){
+					app.sAlipayAccount = ''
+					app.sAlipayRealName = ''
+				}
+			},
+			checkForm: function(){
+				app.dMoney = parseFloat(app.dMoney)
+				if(!app.iType && app.iType != 0){
+					go_alert2('请选择提现方式')
+					return false
+				} 
+				if(!app.dMoney){
+					go_alert2('请输入提现金额')
+					return false
+				}
+				if(app.dTipBalance < app.dMoney){
+					go_alert2('可用余额不足')
+					return false
+				}
+				if(app.iType == 1){
+					if(!app.sAlipayAccount){
+						go_alert2('请输入支付宝账号')
+						return false
+					}
+					if(!app.sAlipayRealName){
+						go_alert2('请输入支付宝账号真实姓名')
+						return false
+					}
+				}
+				return true
+			},
+			getMemberInfo: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'member.balance',
+					data: {iMemberID: this.userInfo.ID, page: 1},
+					success: function(res){
+						app.dTipBalance = res.data.dTipBalance
+					}
+				})
+			},
+			submit: function(){
+				if(app.iType == 0){
+					app.submitAjax({iMemberID: app.userInfo.ID, dMoney: app.dMoney, iType: app.iType})
+				} else{
+					app.submitAjax({iMemberID: app.userInfo.ID, dMoney: app.dMoney, iType: app.iType})
+				}
+			},
+			submitAjax: function(data){
+				if(app.checkForm()){
+					$.ajax({
+						type: 'post',
+						url: host + 'cash.apply',
+						data,
+						success: function(res){
+							if(res.success){
+								go_alert2(res.message)
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			}
+		},
+		mounted: function(){
+			this.getMemberInfo()
+		}
+	})
+
+</script>
+ 
+</html>

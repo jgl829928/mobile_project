@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" >
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+		<link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<section class="flex_1 colorBg overflow_auto font24r relative">
+				<div class="Con">
+					<div class="text-center">
+						<img class="wid20rem loginLogo" src="../img/slice/login_logo.png"/>
+					</div>
+					<div class="LoginForm m-t-40r bg-fff">
+						<p class="color-666">手机号</p>
+						<div class="inputBox border-b-eee">
+							<input v-model="sPhone" maxlength="11" class="font28r" type="number" placeholder="请填写手机号码" value="" />
+						</div>
+						<p class="color-666 mt03">密码</p>
+						<div class="inputBox border-b-eee">
+							<input v-model="sLoginPwd" class="font28r" type="password" placeholder="请填写账号密码" value="" />
+						</div> 
+						<label class="mt02"><input id="agree" checked type="checkbox" /><span style="vertical-align: middle" class="check_fang2"></span><i class="ml01">我已阅读并同意</i></label><em onclick="$('.markBox').show()" class="color-ffa127">《平台条款》</em>
+						<div class="text-center m-t-45r">
+							<input @click="login" type="submit" class="keepBtn font24r" value="登录" name="" />
+						</div>
+					</div>
+					<div class="text-center m-t-90r Con">
+						<p class="color-fff">其他社交账号快速登录</p>
+						<img @click="wxLogin" class="wid06rem mt02" src="../img/slice/icon_wechat.png"/>
+					</div>
+				</div>
+			</section>
+			<!--平台条款弹窗-->
+			<div style="z-index: 1;" class="markBox  hide font22r">
+	            <div style="width: 4.7rem;background-color:#FFFFFF;" class="mark richtext l-pad20A">
+	            	<div style="max-height: 6rem;" class="l-h-04rem color-666 Con overflow_auto">
+	            		<p class="text-center font30r color-000">平台条款</p>
+	            		<!-- 1.读取后台设置的汇率
+						2.最少兑换量由后台设置，当前可兑换量读取金币总数
+						3.输入兑换金币数量后自动读取汇率，显示可获得的HEC数量（精确到小数点后两位，多出的位数四舍五入），金币数量必须为大于0的整数
+						4.点击提交时，判断金币数量，如果小于最小兑换量提示“兑换金币数量过少”，2s后提示自动消失；如果大于当前可兑换数量，提示“兑换 -->
+						<div v-html='articlePlatform'></div>
+	            	</div>
+	            	<img style="width: .34rem!important;" onclick="$('.markBox').hide()" class="picClose" src="../img/slice/icon_close.png"/>
+	            </div>
+	      	</div>
+	      	<!--手机号未注册-->
+			<div style="z-index: 1;" class="markBox2 hide font24r">
+	            <div style="width: 4.7rem;" class="mark overflow_hide">
+	            	<div class="Con text-center color-333 border-b-eee p-a-50r bg-fff">
+	            		您的手机号未注册<br />
+						前往注册后可登陆
+	            	</div>
+	            	<div class="hgt08rem bg-fff around-center ">
+	            		<button onclick="$('.markBox2').hide()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+	            		<button @click="toReg" class="wid50 color-fff hgt08rem color-000 font24r">去注册</button>
+	            	</div>
+	            </div>
+	      	</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script>
+
+	var app = new Vue({
+		el: "#app",
+		data: {
+			sPhone: null,
+			sLoginPwd: null,
+			articlePlatform: '',
+			sOpenID: ''
+		},
+		methods: {
+			//  登录
+			login: function(){
+				app.checkForm()
+				if (app.checkForm()) {
+					$.ajax({
+						type: "post",
+						url: host + "member.login",
+						data: { sPhone: app.sPhone, sLoginPwd: app.sLoginPwd },
+						success: function (res) {
+							if (res.code == 404) {
+								$('.markBox2').show()
+							}
+							else if(!res.success){
+								go_alert2(res.message)
+							}
+							else if(res.success){
+								var userInfo = res.data
+								localStorage.userInfo = JSON.stringify(userInfo)
+								location.href = "index.html"
+							}
+						}
+					})
+				}
+			},
+			//  跳转注册
+			toReg: function(){
+				location.href = "validatePhone.html"
+			},
+			checkForm: function(){
+				var sJuegesPhone = phoneReg.test(app.sPhone)
+				if(!sJuegesPhone){
+					go_alert2("请输入正确的手机号")
+					return
+				}
+				var sJuegesLoginPwd = (app.sLoginPwd == null || app.sLoginPwd == "")
+				if(sJuegesLoginPwd){
+					go_alert2("请输入账号密码")
+					return
+				}
+				var sJuegeAgree = $("#agree")[0].checked
+				if(!sJuegeAgree){
+					go_alert2("请阅读并同意《平台条款》")
+					return
+				}
+				return true
+			},
+			getArticlePlatform: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'article.platform',
+					success: function(res){
+						app.articlePlatform = res.data.sContent
+					}
+				})
+			},
+			wxLogin: function () {
+				var u = navigator.userAgent;
+				var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+				var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+				if (isAndroid) {
+					WebViewJavascriptBridge.wxLoginAction()
+				}
+				if (isiOS) {
+				    try {
+				        webkit.messageHandlers.wxLoginAction.postMessage("")
+				    }
+				    catch (e) { }
+				}
+			}
+		},
+		mounted: function(){
+			this.getArticlePlatform()
+		}
+	})
+
+	function getOpenID(sOpenID, sNickname, sImageSrc){
+		// location.href = 'reg.html?' + 'sOpenID=' + sOpenID + '&sNickname=' + sNickname + '&sAvator=' + sAvator
+		app.sOpenID = sOpenID
+		app.sNickname = sNickname
+		app.sImageSrc = sImageSrc
+		localStorage.wxInfo = JSON.stringify({
+			sOpenID,
+			sNickname,
+			sImageSrc
+		})
+		localStorage.removeItem('userInfo')
+		$.ajax({
+		    type: 'post',
+		    url: host + 'member.wechatlogin',
+		    data: { sOpenID },
+		    success: function (res) {
+		        if (res.success) {
+		            var userInfo = res.data
+		            localStorage.userInfo = JSON.stringify(userInfo)
+		            //location.href = "index.html"
+		        } else {
+                    go_alert2(res.message)
+		        }
+		        location.href = 'index.html'
+		    }
+		})
+	}
+
+</script>
+ 
+</html>

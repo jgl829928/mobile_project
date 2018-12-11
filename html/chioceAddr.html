@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>路线</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>选择地址</h1>
+			</header>
+			<!--搜索框-->
+			<div class="addrSearchBox flex_dom flex_item_mid">
+				<img class="icon-search ml02" src="../img/slice/icon-search.png"/>
+				<input id="suggestId" type="text" class="flex_1 placeholderccc pv02" placeholder="搜地点" />
+				<button></button>
+			</div>
+			<!--地图-->
+			<div class="flex_1 relative" id="bMap">
+				
+			</div>
+			<!--中心标点-->
+			<img class="choiceIcon" src="../img/slice/icon-yAddr.png" alt="" />
+			<!--底部信息-->
+			<div class="choiceBtm flex_dom">
+				<p class="flex_1 mr03" id="locationName"></p>
+				<button onclick="ensureAddr()">确定</button>
+			</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var urlParam = GetRequest();
+	var geolocation = new BMap.Geolocation();
+	var map = new BMap.Map("bMap");
+	var geoc = new BMap.Geocoder();
+	var ac = new BMap.Autocomplete(
+			{"input" : "suggestId"
+			,"location" : map
+		});
+	var addr = {};
+	//监听中心点的变化
+	map.addEventListener('dragend',function(){
+        //获得移动之后地图中心点的像素位置
+        var pixel = map.pointToOverlayPixel(map.getCenter());
+        //获得定位图标所在位置在地图上的地理位置，实际上定位图标的像素位置就在地图中心像素位置相应的偏移量处
+        var Point = map.overlayPixelToPoint({x:pixel.x,y:pixel.y});
+        $('#suggestId').blur();
+        getAddrName(Point);
+    });
+
+	$(function () {
+	    localStorage.setItem('isLoadAddr', 0);
+		if(urlParam.type == 1){
+			var startAddr = JSON.parse(localStorage.getItem('startAddr'));
+			if(startAddr){
+				map.centerAndZoom(new BMap.Point(startAddr.lng, startAddr.lat), 16);
+				getAddrName({"lng":startAddr.lng,"lat":startAddr.lat});
+			}else{
+				loadLocation();
+			}
+		}
+		else if(urlParam.type == 2){
+			var passAddr = JSON.parse(localStorage.getItem('passAddr'));
+			if(passAddr){
+				map.centerAndZoom(new BMap.Point(passAddr.lng, passAddr.lat), 16);
+				getAddrName({"lng":passAddr.lng,"lat":passAddr.lat});
+			}else{
+				loadLocation();
+			}
+		}
+		else if(urlParam.type == 3){
+			var endAddr = JSON.parse(localStorage.getItem('endAddr'));
+			if(endAddr){
+				map.centerAndZoom(new BMap.Point(endAddr.lng, endAddr.lat), 16);
+				getAddrName({"lng":endAddr.lng,"lat":endAddr.lat});
+			}else{
+				loadLocation();
+			}
+		}
+		else if(urlParam.type == 4){
+			var homeAddr = JSON.parse(localStorage.getItem('homeAddr'));
+			if(homeAddr){
+				map.centerAndZoom(new BMap.Point(homeAddr.lng, homeAddr.lat), 16);
+				getAddrName({"lng":homeAddr.lng,"lat":homeAddr.lat});
+			}else{
+				loadLocation();
+			}
+		}
+		else if(urlParam.type == 5){
+			var companyAddr = JSON.parse(localStorage.getItem('companyAddr'));
+			if(companyAddr){
+				map.centerAndZoom(new BMap.Point(companyAddr.lng, companyAddr.lat), 16);
+				getAddrName({"lng":companyAddr.lng,"lat":companyAddr.lat});
+			}else{
+				loadLocation();
+			}
+		}
+		else{
+			loadLocation();
+		}
+	});
+	//获取当前定位
+	function loadLocation() {
+	    switch (switchOS()) {
+	        case 'android':
+	            WebViewJavascriptBridge.startLocation();
+	            break;
+	        case 'ios':
+	            try {
+	                webkit.messageHandlers.startLocation.postMessage("");
+	            }
+	            catch (e) { }
+	            break;
+	        case 'pc':
+	            geolocation.getCurrentPosition(function (r) {
+	                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+	                    var mk = new BMap.Marker(r.point);
+	                    if ((urlParam.type == 1 && localStorage.getItem('startAddr')) || (urlParam.type == 2 && localStorage.getItem('passAddr')) || (urlParam.type == 3 && localStorage.getItem('endAddr'))) {
+
+	                    } else {
+	                        map.centerAndZoom(new BMap.Point(r.point.lng, r.point.lat), 16);
+	                    }
+	                    getAddrName(r.point);
+	                    //				map.addOverlay(mk);
+	                    //				map.panTo(mk);
+	                }
+	            })
+	    }
+		
+	}
+    //获取app坐标
+	function APPlocation(lng,lat) {
+	    map.centerAndZoom(new BMap.Point(lng, lat), 16);
+	    getAddrName({lng: lng,lat: lat});
+	}
+	//逆地址解析
+	function getAddrName(point){
+			
+		var ad = new BMap.Point(point.lng,point.lat);
+		geoc.getLocation(ad, function(rs){
+			console.log(rs)
+			if(!rs)return;
+			var addComp = rs.addressComponents;
+			var addrName = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber;
+			addr.name = addrName;
+			addr.lng = point.lng;
+			addr.lat = point.lat;
+			if(urlParam.type == 4 || urlParam.type == 5){
+				addr.sProvince = addComp.province;
+				addr.sCity = addComp.city;
+				addr.sRegion = addComp.district;
+				addr.sAddress = addComp.street + addComp.streetNumber;
+				addr.sProvince = addComp.province;
+			}
+			$('#locationName').text(addrName);
+			
+		});  
+	}
+	//搜索选择后
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+		var _value = e.item.value;
+		var point = e.target.yd.src.BC;
+		var	myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+//			G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		$('#suggestId').blur();
+		geoc.getPoint(myValue, function(point){
+		    if (point) {
+		        addr.name = myValue;
+		        addr.lng = point.lng;
+		        addr.lat = point.lat;
+		        if (urlParam.type == 4 || urlParam.type == 5) {
+		            addr.sProvince = _value.province;
+		            addr.sCity = _value.city;
+		            addr.sRegion = _value.district;
+		            addr.sAddress = _value.street + _value.business;
+		        }
+				map.centerAndZoom(point, 16);
+				$('#locationName').text(myValue);
+			}else{
+				alert("您选择地址没有解析到结果!");
+			}
+		},_value.province);
+	});
+	//确定地址
+	function ensureAddr(){
+		localStorage.setItem('isLoadAddr',0);
+		if(urlParam.type == 1){
+			localStorage.setItem('startAddr',JSON.stringify(addr));
+		}else if(urlParam.type == 2){
+			localStorage.setItem('passAddr',JSON.stringify(addr));
+		}else if(urlParam.type == 3){
+			localStorage.setItem('endAddr',JSON.stringify(addr));
+		}else if(urlParam.type == 4){
+			localStorage.setItem('homeAddr',JSON.stringify(addr));
+		}else if(urlParam.type == 5){
+			localStorage.setItem('companyAddr',JSON.stringify(addr));
+		}
+		goBack();
+	}
+</script>
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的评分</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+
+	</head>
+
+	<body>
+		<section id="app" class="my-pf main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>我的评分</h1>
+			</header>
+			<div id="scrollCtt" class="flex_1 overflow_auto bg-f7">
+				<!-- 模板 -->
+				<div v-for="item in cmtList" class="mod-wrap font24r overflow_hide p_both20r bg-fff">
+					<p class="flex_dom flex_item_mid m-t-20r">
+						<img style="width: .26rem;" src="../img/slice/icon-clock.png" alt="">
+						<span class="m-l-10r" v-text="item.sDepartureTime.replace(/-/g,'.').substring(0,16)"></span>
+					</p>
+					<p class="flex_dom flex_item_mid m-t-20r">
+						<img style="width: .26rem;" src="../img/slice/icon-addr.png" alt="">
+						<span class="m-l-10r" v-cloak>{{item.sStartAddress}}</span>
+					</p>
+					<p v-if="item.sPassAddress" class="flex_dom flex_item_mid m-t-20r">
+						<img style="width: .26rem;" src="../img/slice/icon-gAddr.png" alt="">
+						<span class="m-l-10r" v-cloak>{{item.sPassAddress}}</span>
+					</p>
+					<p class="flex_dom flex_item_mid m-t-20r p-b-20r border-b-eee">
+						<img style="width: .26rem;" src="../img/slice/icon-yAddr.png" alt="">
+						<span class="m-l-10r" v-cloak>{{item.sEndAddress}}</span>
+					</p>
+					<p class="l-h-065rem flex_dom flex_item_between border-b-eee">
+						<span v-if="item.iEvalType == 0">评价：
+							<em class="color-orange">好评</em>
+						</span>
+						<span v-if="item.iEvalType == 1">评价：
+							<em class="color-orange">中评</em>
+						</span>
+						<span v-if="item.iEvalType == 2">评价：
+							<em class="color-orange">差评</em>
+						</span>
+						<span class="color-999" v-text="item.dCreateTime.replace(/-/g,'.').substring(0,16)"></span>
+					</p>
+					<p class="p-v-20r">
+						<span v-for="item2 in item.sContent.split(',')" class="tag">{{item2}}</span>
+						<!-- <span class="tag">人很好</span>
+									<span class="tag">师傅非常好</span> -->
+					</p>
+                    
+				</div>
+                <p class="moreText text-center l-h-06rem"></p>
+				
+
+                
+				<div class="no_data">
+					<p>暂无评分</p>
+				</div>
+			</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script>
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			page: 1,
+			cmtList: [],
+			isLoad: true,
+			isAjaxIng: false
+		},
+		methods: {
+			getCmtList: function(){
+				this.isAjaxIng = false
+				$.ajax({
+					type: 'post',
+					url: host + 'order.getevallist',
+					data: {
+						iMemberID: this.userInfo.ID,
+						iType: 0,
+						page: this.page
+					},
+					success: function(res){
+						app.cmtList = app.cmtList.concat(res.data)
+						if (res.data.length < 15) {
+							app.isLoad = false
+						}
+						app.isAjaxIng = true
+					}
+				})
+			}
+		},
+		mounted: function(){
+			this.getCmtList()
+		}
+	})
+
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+				if(app.isAjaxIng){
+					app.page = app.page + 1;
+					app.getList();
+					$(".moreText").html('加载中...');
+				}
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+    });
+
+</script>
+ 
+</html>

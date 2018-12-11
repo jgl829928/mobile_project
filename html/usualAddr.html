@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>常用地址</h1>
+			</header>
+			<section class="flex_1 bg-f7 overflow_auto font24r relative">
+				<div class="l-pad20 bg-fff">
+					<div class="addLine hgt12rem between-center border-b-eee" onclick="goChoiceAddr(4)">
+						<div class="center">
+							<img class="wid05rem" src="../img/slice/icon_home.png"/>
+							<span class="ml01 mt02 font-w6">家的位置</span>
+						</div>
+						<span class="wid37rem mt02 text-right line2 color-999" id="homeAddr"></span>
+					</div>
+					<div class="addLine hgt12rem between-center" onclick="goChoiceAddr(5)">
+						<div class="center">
+							<img class="wid05rem" src="../img/slice/icon_firm.png"/>
+							<span class="ml01 mt02 font-w6">单位地址</span>
+						</div>
+						<span class="wid37rem mt02 text-right line2 color-999" id="companyAddr"></span>
+					</div>
+				</div>
+				<div class="wid100 m-t-30r around-center hgt14rem">
+					<button class="keepBtn" onclick="setAddr()">保存</button>
+				</div>
+			</section>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo();
+	var addres;
+	$(function(){
+		if(localStorage.getItem('isLoadAddr') == 1){
+			localStorage.removeItem('homeAddr');
+			localStorage.removeItem('companyAddr');
+			$.ajax({
+				type:"post",
+				data: {
+					iMemberID: (JSON.parse(localStorage.getItem('userInfo'))).ID
+				},
+				url:host+"addr.gethaclist",
+				success: function(res){
+					if(res.success){
+						addres = res.data;
+						for(var i = 0;i < res.data.length;i++){
+							var addr = res.data[i];
+							if(addr.iType === 1){
+								$('#homeAddr').text(addr.sProvince+addr.sCity+addr.sRegion+addr.sAddress);
+								var homeAddr = addr;
+								homeAddr.name = addr.sProvince+addr.sCity+addr.sRegion+addr.sAddress;
+								homeAddr.lng = addr.sLongitude;
+								homeAddr.lat = addr.sLatitude;
+								localStorage.setItem('homeAddr',homeAddr);
+							}
+							if(addr.iType == 2){
+								$('#companyAddr').text(addr.sProvince+addr.sCity+addr.sRegion+addr.sAddress);
+								var companyAddr = addr;
+								companyAddr.name = addr.sProvince+addr.sCity+addr.sRegion+addr.sAddress;
+								companyAddr.lng = addr.sLongitude;
+								companyAddr.lat = addr.sLatitude;
+								localStorage.setItem('companyAddr',companyAddr);
+							}
+						}
+					}else{
+						go_alert2(res.message);
+					}
+				}
+			});
+		}else{
+			var homeAddr = JSON.parse(localStorage.getItem('homeAddr'));
+			var companyAddr = JSON.parse(localStorage.getItem('companyAddr'));
+			if(homeAddr){
+				$('#homeAddr').text(homeAddr.name);
+			}
+			if(companyAddr){
+				$('#companyAddr').text(companyAddr.name);
+			}
+		}
+	});
+	function goChoiceAddr(type){
+		location.href = 'chioceAddr.html?type='+type;
+	}
+	//设置常用地址
+	function setAddr(){
+		var memberId = (JSON.parse(localStorage.getItem('userInfo'))).ID;
+		var homeAddr = JSON.parse(localStorage.getItem('homeAddr'));
+		var companyAddr = JSON.parse(localStorage.getItem('companyAddr'));
+		var addrList = [];
+		var addrData1 = {};
+		var addrData2 = {};
+		if(homeAddr){
+			addrData1.iMemberID = memberId;
+			addrData1.sProvince = homeAddr.sProvince;
+			addrData1.sCity = homeAddr.sCity;
+			addrData1.sRegion = homeAddr.sRegion;
+			addrData1.sAddress = homeAddr.sAddress;
+			addrData1.sLongitude = homeAddr.lng;
+			addrData1.sLatitude = homeAddr.lat;
+			addrData1.iType = 1;
+			addrList.push(addrData1);
+		}
+		if(companyAddr){
+			addrData2.iMemberID = memberId;
+			addrData2.sProvince = companyAddr.sProvince;
+			addrData2.sCity = companyAddr.sCity;
+			addrData2.sRegion = companyAddr.sRegion;
+			addrData2.sAddress = companyAddr.sAddress;
+			addrData2.sLongitude = companyAddr.lng;
+			addrData2.sLatitude = companyAddr.lat;
+			addrData2.iType = 2;
+			addrList.push(addrData2);
+		}
+		console.log(addrList);
+		$.ajax({
+			type:"post",
+			data: {
+				iMemberID: memberId,
+				sAddressList: JSON.stringify(addrList)
+			},
+			url:host+"addr.adds",
+			success: function(res){
+				if(res.success){
+					go_alert2('保存成功');
+				}else{
+					go_alert2(res.message);
+				}
+			}
+		});
+	}
+</script>
+ 
+</html>

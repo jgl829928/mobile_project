@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="hgt07rem border-b-eee l-pad20 bg-fff between-center">
+				<div class="wid12rem center">
+					<img class="wid014rem" src="../img/slice/icon-back.png"/>
+				</div>
+				<h3 class="font28r">个人信息</h3>
+				<div @click="submit('nickname')" class="wid12rem font-w6 font22r center-end">
+					保存
+				</div>
+			</header>
+			<section class="flex_1 overflow_auto bg-f7 font24r relative">
+				<div class="Con bg-fff l-pad20">
+					<div @click="uploadImage" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 ml01">头像</span>
+						</div>
+						<img v-cloak class="hgt07rem wid07rem radius_half" :src="userInfo.sImageSrc ? userInfo.sImageSrc : '../img/slice/defaultHeader.png'"/>
+					</div>
+					<div href="javascript:;" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 ml01">昵称</span>
+						</div>
+						<input v-cloak v-model="userInfo.sNickname" type="text" class="wid50 only_line text-right" placeholder="填写昵称" />
+					</div>
+					<a :href="'unbindPhone.html?' + userInfo.sPhone" class="hgt09rem between-center">
+						<div class="center wid50">
+							<span class="color-666">手机号</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right" v-if="userInfo.sPhone" v-text="tPhone(userInfo.sPhone)"></span>
+					</a>
+				</div>
+			</section>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			userInfo: {}
+		},
+		mounted: function(){
+			this.getUserInfo()
+		},
+		methods: {
+			getUserInfo: function(){
+				$.ajax({
+				type: 'post',
+				url: host + 'member.get',
+				data: {iMemberID: JSON.parse(localStorage.userInfo).ID},
+				success: function(res){
+					app.userInfo = res.data
+				}
+			})
+			},
+			submit: function(method){
+				switch(method){
+					case 'nickname':
+						$.ajax({
+							type: 'post',
+							url: host + 'member.changenickname',
+							data: {iMemberID: app.userInfo.ID, sNickname: app.userInfo.sNickname},
+							success: function(res){
+								if(res.success){
+									go_alert2(res.message)
+								} else {
+									go_alert2(res.message)
+								}
+							}
+						})
+						break;
+					case 'headpic':
+						
+						break;
+				}
+				// app.getUserInfo()
+			},
+			tPhone: function(phone){
+				return phone.substring(0,3) + "****" + phone.substring(8,11)
+			},
+			uploadImage: function(){
+				var u = navigator.userAgent;
+				var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+				var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+				if (isAndroid) {
+					WebViewJavascriptBridge.uploadImage()
+				}
+				if (isiOS) {
+				    try {
+				        webkit.messageHandlers.uploadImage.postMessage("")
+				    }
+				    catch (e) { }
+				}
+			}
+		}
+	})
+
+	function getImgSrc(imgSrc){
+		app.userInfo.sImageSrc = imgSrc
+		$.ajax({
+			type: 'post',
+			url: host + 'member.changeimage',
+			data: {sImageSrc: app.userInfo.sImageSrc, iMemberID: app.userInfo.ID},
+			success: function(res){
+				if(res.success){
+					go_alert2(res.message)
+				} else {
+					go_alert2(res.message)
+				}
+			}
+		})
+	}
+
+</script>
+ 
+</html>

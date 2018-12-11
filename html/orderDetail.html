@@ -1,0 +1,1134 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>详情</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+		<style>
+			.BMap_pop{
+				display: block !important;
+			}
+			.BMap_pop img{
+				display: none;
+			}
+			.BMap_shadow img{
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+        <section class="main hgt_full flex_column bg-f7" id="app" v-cloak>
+            <header class="curHeader">
+                <a class="goBack" href="javascript:;"></a>
+                <h1>详情</h1>
+                <!--已预约-->
+                <a v-if="info.iStatus == 1 || info.iStatus == 2" class="cancelOrderBtn" onclick="cancelOrder()" href="javascript:;">取消订单</a>
+                <a v-if="info.iStatus === 0 && info.iMemberID == userInfo.ID" class="cancelOrderBtn" @click="myCancel()" href="javascript:;">取消订单</a>
+            </header>
+            <div :class="['overflow_auto', info.iMemberID == userInfo.ID && info.iStatus == 0 ?'flex_1':'']">
+                <div class="block bg-fff ph02" href="javascript:;">
+                    <div class="flex_dom pv02" v-if="info.iMemberID == userInfo.ID && (info.iStatus == 0 || (info.iStatus == 6 && !info.sDesc))">
+                        <div class="flex_1">
+                            <div class="hgt04rem l-h-04rem flex_dom flex_item_mid">
+                                <div class="flex_1 only_line font24r">订单编号：{{info.sOrderNo}}</div>
+                                <span class="color-orange font22r" v-if="info.iType === 1 && info.iStatus == 0">待接单</span>
+                                <span class="color-orange font22r" v-if="info.iType === 0 && info.iStatus == 0">待预约</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 1">已预约</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 2">已接单</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 3">进行中</span>
+                                <span class="color-000 font22r" v-if="info.iStatus == 4">已完成</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 5">已评价</span>
+                                <span class="color-000 font22r" v-if="info.iStatus == 6">已取消</span>
+                            </div>
+                            <div class="font22r flex_dom flex_item_mid">
+                                <div class="flex_1"></div>
+                                <span class="font20r color-999">{{info.dCreateTime}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex_dom pv02" v-else>
+                        <div class="cur_head coverImg" :style="{backgroundImage: 'url('+(info.sMemberImageSrc?info.sMemberImageSrc:'../img/slice/defaultHeader.png')+')'}"></div>
+                        <div class="flex_1 ph02">
+                            <div class="hgt04rem l-h-04rem flex_dom flex_item_mid">
+                                <div class="flex_1">
+                                    <span class="font28r only_line boxName">{{info.sMemberName | filterName}}{{info.iMemberGender?(info.iMemberGender==1?"先生":"女士"):""}}</span>
+                                    <button class="p_icon1 bg-orange color-fff" v-if="info.iMemberLevel == 1">随员</button>
+                                    <button class="p_icon1 bg-orange color-fff" v-if="info.iMemberLevel == 2">三秘</button>
+                                    <button class="p_icon1 bg-orange color-fff" v-if="info.iMemberLevel == 3">二秘</button>
+                                    <button class="p_icon1 bg-orange color-fff" v-if="info.iMemberLevel == 4">一秘</button>
+                                    <button class="p_icon1 bg-orange color-fff" v-if="info.iMemberLevel == 5">参赞-{{info.sOccupation}}</button>
+                                    <button class="p_icon1 bg-orange color-fff" v-if="info.iMemberLevel == 6">大使</button>
+                                </div>
+                                <span class="color-orange font22r" v-if="info.iType === 1 && info.iStatus == 0">待接单</span>
+                                <span class="color-orange font22r" v-if="info.iType === 0 && info.iStatus == 0">待预约</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 1">已预约</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 2">已接单</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 3">进行中</span>
+                                <span class="color-000 font22r" v-if="info.iStatus == 4">已完成</span>
+                                <span class="color-orange font22r" v-if="info.iStatus == 5">已评价</span>
+                                <span class="color-000 font22r" v-if="info.iStatus == 6">已取消</span>
+                            </div>
+                            <div class="font22r flex_dom flex_item_mid">
+                                <div class="flex_1">
+                                    <img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+                                    <em>{{info.sMemberIntegral}}</em>
+                                </div>
+                                <span class="font20r color-999">{{info.dCreateTime}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t-eee flex_dom pv015">
+                        <div class="flex_1 color-000 font22r">
+                            <p class="font24r only_line" v-if="!(info.iMemberID == userInfo.ID && info.iStatus == 0)">{{info.sCommunity}}-{{info.sVehicleInfo}}</p>
+                            <p class="flex_dom flex_item_mid l-h-04rem mt005">
+                                <img class="wid026rem mr01" src="../img/slice/icon-clock.png" alt="" />
+                                <span class="flex_1 only_line">{{info.sDepartureTime}}</span>
+                            </p>
+                            <p class="flex_dom flex_item_mid l-h-04rem mt005">
+                                <img class="wid026rem mr01" src="../img/slice/icon-yuan.png" alt="" />
+                                <span class="flex_1 only_line">{{info.sStartAddress}}</span>
+                            </p>
+                            <p class="flex_dom flex_item_mid l-h-04rem mt005" v-if="info.sPassAddress">
+                                <img class="wid026rem mr01" src="../img/slice/icon-way.png" alt="" />
+                                <span class="flex_1 only_line">{{info.sPassAddress}}</span>
+                            </p>
+                            <p class="flex_dom flex_item_mid l-h-04rem mt005">
+                                <img class="wid026rem mr01" src="../img/slice/icon-yAddr.png" alt="" />
+                                <span class="flex_1 only_line">{{info.sEndAddress}}</span>
+                            </p>
+                            <p class="flex_dom flex_item_mid l-h-04rem mt005" v-if="info.iStatus === 0 && app.info.iMemberID == app.userInfo.ID">
+                                <img class="wid026rem mr01" src="../img/slice/p_3.png" alt="" />
+                                <span class="flex_1 only_line">{{info.sMemberName}}</span>
+                            </p>
+                            <p class="flex_dom flex_item_mid l-h-04rem mt005" v-if="info.iStatus === 0 && app.info.iMemberID == app.userInfo.ID">
+                                <img class="wid026rem mr01" src="../img/slice/p_2.png" alt="" />
+                                <span class="flex_1 only_line">{{info.sMemberPhone}}</span>
+                            </p>
+                        </div>
+                        <span class="font22r color-000">随行<em class="font26r font-w6">{{info.iType ? info.iPersonNumber: info.iSeatNumber}}</em>人</span>
+                    </div>
+                    <div class="border-t-eee font24r pv02" v-if="info.sDesc">
+                        <h3 class="font24r color-666 l-h-04rem">取消原因：</h3>
+                        <p>{{info.sDesc}}</p>
+                    </div>
+                    <div class="border-t-eee font24r pv02" v-else>
+                        <h3 class="font24r color-666 l-h-04rem">备注：</h3>
+                        <p v-if="info.iType === 1">{{info.sPassengerDesc}}</p>
+                        <p v-if="info.iType === 0">{{info.sDriverDesc}}</p>
+                    </div>
+                    <div class="border-t-eee pv02 font0" v-if="info.sContent">
+                        <i class="p_icon2 mr01 mb01" v-for="item in (info.sContent.split(','))">{{item}}</i>
+                    </div>
+                </div>
+
+                <div class="mt02" v-if="info.iMemberID == userInfo.ID && info.iStatus === 0">
+                    <div id="bMap"></div>
+                    <a class="flex_dom flex_item_mid flex_item_between ph02 hgt08rem bg-fff mb01" href="javascript:;">
+                        <span class="font26r color-000" v-cloak>{{info.iType == 0?"附近乘客":"附近车主"}}</span>
+                    </a>
+                    <div class="">
+                        <a @click="goDetail(item.ID)" class="block mb01 bg-fff ph02" v-for="item in orderList" href="javascript:;" v-cloak>
+                            <div class="flex_dom pv02">
+                                <div class="cur_head coverImg" :style="{backgroundImage: 'url('+(item.sMemberImageSrc?item.sMemberImageSrc:'../img/slice/defaultHeader.png')+')'}"></div>
+                                <div class="flex_1 ph02">
+                                    <div class="hgt04rem l-h-04rem flex_dom flex_item_mid">
+                                        <div class="flex_1">
+                                            <span class="font28r only_line boxName">{{item.sMemberName | filterName}}{{item.iMemberGender?(item.iMemberGender==1?"先生":"女士"):""}}</span>
+                                            <button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 1">随员</button>
+                                            <button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 2">三秘</button>
+                                            <button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 3">二秘</button>
+                                            <button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 4">一秘</button>
+                                            <button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 5">参赞-{{item.sOccupation}}</button>
+                                            <button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 6">大使</button>
+                                        </div>
+                                        <span class="color-orange font22r" v-if="item.iType === 1 && item.iStatus == 0">待接单</span>
+                                        <span class="color-orange font22r" v-if="item.iType === 0 && item.iStatus == 0">待预约</span>
+                                        <span class="color-orange font22r" v-if="item.iStatus == 1">已预约</span>
+                                        <span class="color-orange font22r" v-if="item.iStatus == 2">已接单</span>
+                                        <span class="color-orange font22r" v-if="item.iStatus == 3">进行中</span>
+                                        <span class="color-000 font22r" v-if="item.iStatus == 4">已完成</span>
+                                        <span class="color-orange font22r" v-if="item.iStatus == 5">已评价</span>
+                                        <span class="color-000 font22r" v-if="item.iStatus == 6">已取消</span>
+                                    </div>
+                                    <div class="font22r flex_dom">
+                                        <div class="flex_1">
+                                            <img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+                                            <em>{{item.sMemberIntegral}}</em>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t-eee flex_dom pv015">
+                                <div class="flex_1 color-000 font22r">
+                                    <p class="font24r only_line">{{item.sCommunity}}-{{item.sVehicleInfo}}</p>
+                                    <p class="flex_dom flex_item_mid l-h-04rem mt005">
+                                        <img class="wid026rem mr01" src="../img/slice/icon-clock.png" alt="" />
+                                        <span class="flex_1 only_line">{{item.sDepartureTime}}</span>
+                                    </p>
+                                    <p class="flex_dom flex_item_mid l-h-04rem mt005">
+                                        <img class="wid026rem mr01" src="../img/slice/icon-yuan.png" alt="" />
+                                        <span class="flex_1 only_line">{{item.sStartAddress}}</span>
+                                    </p>
+                                    <p class="flex_dom flex_item_mid l-h-04rem mt005" v-if="item.sPassAddress">
+                                        <img class="wid026rem mr01" src="../img/slice/icon-way.png" alt="" />
+                                        <span class="flex_1 only_line">{{item.sPassAddress}}</span>
+                                    </p>
+                                    <p class="flex_dom flex_item_mid l-h-04rem mt005">
+                                        <img class="wid026rem mr01" src="../img/slice/icon-yAddr.png" alt="" />
+                                        <span class="flex_1 only_line">{{item.sEndAddress}}</span>
+                                    </p>
+                                </div>
+                                <span class="font22r color-000">随行<em class="font26r font-w6">{{item.iType ? item.iPersonNumber: item.iSeatNumber}}</em>人</span>
+                            </div>
+                        </a>
+                        <div v-if="orderList.length == 0" style="top:.5rem;position:relative; height: 2.5rem;display: none;" class="no_data">
+                            <p class="color-999">暂无数据</p>
+                        </div>
+                        <p v-if="orderList.length > 0" class="color-999 font24r text-center moreText pv02" v-cloak></p>
+                    </div>
+                </div>
+            </div>
+            <div class="detailMap relative flex_1" v-if="info.iStatus == 6">
+                <div class="flex_dom detailBtns">
+                    <a @click="delOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">删除</a>
+                </div>
+            </div>
+            <div class="detailMap relative flex_1" v-if="!(info.iMemberID == userInfo.ID && (info.iStatus == 0 || info.iStatus == 6))">
+                <!--地图-->
+                <!--已完成没有地图-->
+                <div class="mapCtt" id="bMap">
+
+                </div>
+                <div v-if="info.iMemberID == userInfo.ID">
+                    <div v-if="info.iType == 1">
+                        <!--车主-->
+                        <!--待预约-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus === 0">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <label for="people" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">确认预约</label>
+                            <input id="people" type="text" class="hide otherChoice" onclick="$(this).blur();"  />
+                        </div>
+                        <!--已预约-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 1">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <a @click="startOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">已上车</a>
+                        </div>
+                        <!--已接单-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 2">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <a @click="startOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">已上车</a>
+                        </div>
+                        <!--进行中-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 3">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <a @click="finishOrder(1)" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">完成行程</a>
+                        </div>
+                        <!--已完成-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 4 || info.iStatus == 5">
+                            <a v-if="info.iStatus == 4" onclick="openAppraise()" href="javascript:;" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">评价</a>
+                            <a v-if="info.iStatus == 5" href="javascript:;" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">已评价</a>
+                            <a onclick="openMind()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">心意</a>
+                        </div>
+                    </div>
+                    <div v-if="info.iType == 0">
+                        <!--乘客-->
+                        <!--待接单-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 1">
+                            <a href="javascript:;" @click="goPassengerInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看乘客信息</a>
+                            <a @click="takeOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">确认接单</a>
+                        </div>
+                        <!--已预约-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 2">
+                            <a href="javascript:;" @click="goPassengerInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看乘客信息</a>
+                            <a href="javascript:;" @click="startOrder(1)" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">已上车</a>
+                        </div>
+                        <!--进行中-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 3">
+                            <a href="javascript:;" @click="goPassengerInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看乘客信息</a>
+                            <a @click="finishOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">完成行程</a>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="info.iMemberID != userInfo.ID">
+                    <div v-if="info.iType == 0">
+                        <!--车主-->
+                        <!--待预约-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 0">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <label for="people" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">确认预约</label>
+                            <input id="people" type="text" class="hide otherChoice" onclick="$(this).blur();" />
+                        </div>
+                        <!--已预约-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 1">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <!--<a @click="startOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">已上车</a>-->
+                        </div>
+                        <!--已接单-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 2">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <a @click="startOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">已上车</a>
+                        </div>
+                        <!--进行中-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 3">
+                            <a href="javascript:;" @click="goDriverInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看车主信息</a>
+                            <a @click="finishOrder(1)" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">完成行程</a>
+                        </div>
+                        <!--已完成-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 4 || info.iStatus == 5">
+                            <a v-if="info.iStatus == 4" onclick="openAppraise()" href="javascript:;" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">评价</a>
+                            <a v-if="info.iStatus == 5" href="javascript:;" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">已评价</a>
+                            <a onclick="openMind()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">心意</a>
+                        </div>
+                    </div>
+                    <div v-if="info.iType == 1">
+                        <!--乘客-->
+                        <!--待接单-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 0">
+                            <a href="javascript:;" @click="goPassengerInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看乘客信息</a>
+                            <a @click="takeOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">确认接单</a>
+                        </div>
+                        <!--已预约-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 2 || info.iStatus == 1">
+                            <a href="javascript:;" @click="goPassengerInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看乘客信息</a>
+                            <a href="javascript:;" @click="startOrder(1)" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">已上车</a>
+                        </div>
+                        <!--进行中-->
+                        <div class="flex_dom detailBtns" v-if="info.iStatus == 3">
+                            <a href="javascript:;" @click="goPassengerInfo()" class="flex_1 hgt08rem text-center l-h-08rem color-orange bg-fff font-w6 font22r">查看乘客信息</a>
+                            <a @click="finishOrder()" href="javascript:;" class="flex_1 hgt08rem bg-orange text-center l-h-08rem color-fff font-w6 font22r">完成行程</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--联系客服-->
+            <a class="callBtn" v-if="info.iStatus == 1 || info.iStatus == 2 || info.iStatus == 3" onclick="cancelOrder()" href="javascript:;"><img src="../img/slice/icon-callKefu.png" alt="" /></a>
+            <!--联系车主/乘客-->
+            <a class="callBtn2" v-if="info.iStatus == 1 || info.iStatus == 2" onclick="cancelOrder2()" href="javascript:;"><img src="../img/slice/phone3.png" alt="" /></a>
+
+            <!--评价弹窗-->
+            <div class="mask hide appraiseMask" v-if="info.iStatus == 4">
+                <div class="maskBottom bg-fff">
+                    <div class="maskTitle flex_dom flex_item_mid">
+                        <button class="color-666" onclick="closeAppraise()">取消</button>
+                        <h3 class="flex_1 text-center font24r color-000">评价车主</h3>
+                        <button @click="appraiseOrder()" class="color-000">确定</button>
+                    </div>
+                    <div class="ph02">
+                        <div class="border-t-eee flex_dom flex_item_between appraiseBtns">
+                            <label>
+                                <input type="radio" class="hide" value="0" name="appraise" checked />
+                                <span>好评</span>
+                            </label>
+                            <label>
+                                <input type="radio" class="hide" value="1" name="appraise" />
+                                <span>中评</span>
+                            </label>
+                            <label>
+                                <input type="radio" class="hide" value="2" name="appraise" />
+                                <span>差评</span>
+                            </label>
+                        </div>
+                        <div class="border-t-eee flex_dom flex_wrap appraiseIcons">
+                            <label v-for="item in appraiseList">
+                                <input type="checkbox" name="appraiseCtt" class="hide" />
+                                <span>{{item.sContent}}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--心意弹窗-->
+            <div class="mask hide xinyiMask" v-if="info.iStatus == 4 || info.iStatus == 5">
+                <div class="maskBottom bg-fff">
+                    <div class="maskTitle flex_dom flex_item_mid">
+                        <button class="color-666" onclick="closeMind()">取消</button>
+                        <h3 class="flex_1 text-center font24r color-000">心意</h3>
+                        <button @click="Linking()" class="color-000">确定</button>
+                    </div>
+                    <div class="ph02 bg-fff">
+                        <div class="border-t-eee flex_dom flex_wrap appraiseBtns priceBtns">
+                            <label v-for="item,index in tipList">
+                                <input type="radio" class="hide" name="tip" :id="item.dMoney" :value="item.ID" :checked="index == 0" />
+                                <span>{{item.dMoney}}元</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--请注意车牌号一致-->
+            <div style="z-index: 1;" class="markBox2 hide font24r">
+                <div style="width: 4.8rem;" class="mark overflow_hide">
+                    <div class="Con text-left color-333 border-b-eee p-l-80r p-t-20r p-b-20r bg-fff">
+                        <h3 class="font22r font-w6">请注意车牌号一致：{{info.sVehicleNumber}}</h3>
+                        <div>
+                            <label class="color-orange pv01">
+                                <input @click="choiceLinkman(1)" name="linkmanWay" type="radio" value="0" class="hide" checked />
+                                <span class="check_round_small"></span>
+                                <i class="ml02 color-333">紧急联系人</i>
+                            </label>
+                            <br />
+                            <label class="color-orange pv01">
+                                <input @click="choiceLinkman(2)" type="radio" name="linkmanWay" value="1" class="hide" />
+                                <span class="check_round_small"></span>
+                                <i class="ml02 color-333">临时联系人</i>
+                            </label>
+                            <input type="tel" id="linkmanPhone" style="display: none;" class="wid30rem pa01 border-eee" placeholder="请输入临时联系人手机号" />
+                        </div>
+                    </div>
+                    <div class="hgt08rem bg-fff around-center ">
+                        <button @click="cancelSend()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+                        <button @click="sureSend()" class="wid50 color-fff hgt08rem color-000 font24r">确定</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/vue.min.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B"></script>
+
+<script type="text/javascript" src="../lib/touchSelect.js"></script>	
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			userInfo: JSON.parse(localStorage.getItem('userInfo')),
+			info: {},
+			tipList: [],
+			appraiseList: [],
+			sPhone: '',
+			urlParam: {},
+			orderList: [],
+			isRead: false,
+			flag: true,
+			isLoad: true,
+			param: {
+				page: 1,
+				iType: 0,
+				sCurrentLng: '',
+				sCurrentLat: '',
+				sStartAddress: '',
+				sEndAddress: '',
+				sDepartureTimeBegin: '',
+				sDepartureTimeEnd: '',
+				sPersonNumber: 1
+			},
+		},
+		filters: {
+		    filterName: function (value) {
+		        if (!value) return;
+		        var str = '';
+		        for (var i = 0; i < value.length - 1; i++) {
+		            str += '*';
+		        }
+		        return value.substring(0, 1) + str;
+		    }
+		},
+		methods: {
+		    goDriverInfo: function () {
+
+				if(app.info.iMemberID == app.userInfo.ID){
+				    location.href = 'driverInfo.html?id=' + app.info.iRelMemberID + '&status=' + app.info.iStatus + '&type=0';
+				}else{
+				    location.href = 'driverInfo.html?id=' + app.info.iMemberID + '&status=' + app.info.iStatus + '&type=0';
+				}
+			},
+			goPassengerInfo: function(){
+				if(app.info.iMemberID == app.userInfo.ID){
+				    location.href = 'driverInfo.html?id=' + app.info.iRelMemberID + '&status=' + app.info.iStatus + '&type=1';
+				}else{
+					location.href = 'driverInfo.html?id='+app.info.iMemberID+'&status='+app.info.iStatus+'&type=1';
+				}
+			},
+			goDetail: function (id) {
+			    if (switchOS() == 'android') {
+			        WebViewJavascriptBridge.startOrderDetail("orderDetail.html?id=" + id + '&type=1');
+			    }else{
+			        location.href = "orderDetail.html?id=" + id + '&type=1';
+			    }
+			},
+			//心意
+			Linking: function(){
+				$.ajax({
+					type:"post",
+					data: {
+						iOrderID: app.info.ID,
+						iTipID: $('[name=tip]:checked').val()
+					},
+					url: host+"order.tip",
+					success: function(res){
+						if(res.code == 305){
+							location.href = 'pay2.html?' + 'money=' + $('[name=tip]:checked')[0].id + '&iOrderID=' + app.info.ID + '&iTipID=' + $('[name=tip]:checked').val()
+						}
+						go_alert2(res.message);
+						if(res.success){
+						    setTimeout(function () {
+						        location.reload();
+						    }, 2000)
+						}
+					}
+				});
+			},
+			//评论
+			appraiseOrder: function(){
+				var contents = [];
+				if($('[name=appraiseCtt]:checked').length){
+					$('[name=appraiseCtt]:checked').each(function(){
+						contents.push($(this).next().text());
+					});
+				}
+				$.ajax({
+					type:"post",
+					data: {
+						iMemberID: app.userInfo.ID,
+						iOrderID: app.info.ID,
+						sContent: contents.join(','),
+						iEvalType: $('[name=appraise]:checked').val()
+					},
+					url: host+"order.addcmt",
+					success: function(res){
+						go_alert2(res.message);
+						if(res.success){
+						    setTimeout(function () {
+						        location.reload();
+						    }, 2000)
+						}
+					}
+				});
+			},
+			//取消
+			myCancel: function(){
+				$.ajax({
+					type:"post",
+					data: {
+						iOrderID: app.info.ID
+					},
+					url: host+"order.cancel",
+					success: function(res){
+						go_alert2(res.message);
+						if (res.success) {
+						    setTimeout(function () {
+						        location.reload();
+						    }, 2000)
+						}
+					}
+				});
+			},
+			//完成行程
+			finishOrder: function(type){
+				$.ajax({
+					type:"post",
+					data: {
+						iOrderID: app.info.ID
+					},
+					url: host + "order.stop",
+					success: function (res) {
+					    go_alert2(res.message);
+					    if (res.success) {
+					        if(type){
+					            $('.markBox2').show();
+					        } else {
+					            setTimeout(function () {
+					                location.reload();
+					            }, 2000)
+					        }
+					    }
+					}
+				});
+			},
+		    //删除行程
+			delOrder: function(){
+			    $.ajax({
+			        type: "post",
+			        data: {
+			            iOrderID: app.info.ID
+			        },
+			        url: host + "order.del",
+			        success: function (res) {
+			            go_alert2(res.message);
+			            if (res.success) {
+			                setTimeout(function () {
+			                    goBack();
+			                }, 2000)
+			            }
+			        }
+			    });
+			},
+			//开始行程
+			startOrder: function (type) {
+				$.ajax({
+					type:"post",
+					data: {
+						iOrderID: app.info.ID
+					},
+					url: host+"order.start",
+					success: function(res){
+					    if (res.success) {
+					        if(type){
+					            location.reload();
+					        } else {
+					            $('.markBox2').show();
+					        }
+						} else {
+						    go_alert2(res.message);
+						}
+					}
+				});
+			},
+			cancelSend: function(){
+			    location.reload();
+			},
+			//给联系人发送短信
+			sureSend: function(){
+				if($('[name=linkmanWay]:checked').val() == 1 &&  !$('#linkmanPhone').val()){
+					go_alert2('请输入临时联系人的手机号');
+					return;
+				}
+				if($('[name=linkmanWay]:checked').val() === 0){
+					$('#linkmanPhone').val('');
+				}
+				$.ajax({
+					type:"post",
+					data: {
+						iOrderID: app.info.ID,
+						iOrderStatus: app.info.iStatus == 2 ? 0 : 1,
+						iType: $('[name=linkmanWay]:checked').val(),
+						sPhone: $('[name=linkmanWay]:checked').val() == 1 ? $('#linkmanPhone').val() : ''
+					},
+					url: host+"order.send",
+					success: function(res){
+						if(res.success){
+						    setTimeout(function () {
+						        location.reload();
+						    }, 2000)
+						}
+						if (res.message == '短信接收手机不能为空') {
+						    go_alert2('未设置联系人');
+						} else {
+						    if (!res.success) {
+						        go_alert2(res.message);
+						    }
+						}
+					}
+				});
+			},
+			//确认接单
+			takeOrder: function(){
+				go_confirm({
+				    msg: ["<p class='pv03'>剩余座位数需大于" + app.info.iPersonNumber + "座</p>", "#333"],
+					agree_text:["确定","#333"],
+				    cancel_text:["取消","#999"],
+					text_align:"center",
+					tag_set:{},
+					yesFunc:function(){
+						$.ajax({
+							type:"post",
+							data: {
+								iMemberID: app.userInfo.ID,
+								iOrderID: app.info.ID
+							},
+							url: host+"order.accept",
+							success: function(res){
+								go_alert2(res.message);
+								if (res.success) {
+								    setTimeout(function () {
+								        location.reload();
+								    }, 2000);
+								}
+							}
+						});
+					},//回调函数,可以不设置，或者false
+					noFunc:function(){
+						
+					}//回调函数,可以不设置，或者false
+				});
+			},
+			//选择联系人
+			choiceLinkman: function(type){
+				if(type == 2){
+					$('#linkmanPhone').show();
+				}else{
+					$('#linkmanPhone').hide();
+				}
+			},
+			//获取打赏金额列表
+			getTipList: function(){
+				$.ajax({
+					type:"post",
+					url: host+"tip.getlist",
+					success: function(res){
+						if(res.success){
+							if(res.data){
+								app.tipList = res.data;
+							}
+						}else{
+							go_alert2(res.message);
+						}
+					}
+				});
+			},
+			//获取评价列表
+			getAppraiseList: function(){
+				$.ajax({
+					type:"post",
+					url: host+"eval.getlist",
+					success: function(res){
+						if(res.success){
+							if(res.data){
+								app.appraiseList = res.data;
+							}
+						}else{
+							go_alert2(res.message);
+						}
+					}
+				});
+			},
+			//获取附近
+			getList: function(fenye){
+				//获取附近
+				if(app.flag){
+					app.flag = false;
+					$.ajax({
+						type:"post",
+						data: app.param,
+						url: host+"order.loclist",
+						success: function(res){
+							app.flag = true;
+							if(res.success){
+								app.param.page = app.param.page + 1;
+								if(res.data.length == 0){
+									app.isLoad = false;
+								}else{
+									app.isLoad = true;
+								}
+								if(fenye){
+									app.orderList = app.orderList.concat(res.data);
+								}else{
+									app.orderList = res.data;
+									if(app.orderList.length == 0){
+										$('.no_data').show();
+									}else{
+										$('.no_data').hide();
+									}
+								}
+							}else{
+								go_alert2(res.message);
+							}
+						}
+					});
+				}
+			},
+			getDetail: function (r) {
+			    var urlParam = GetRequest();
+			    $.ajax({
+			        type: "post",
+			        data: {
+			            iOrderID: urlParam.id,
+			            sCurrentLng: String(r.point.lng),
+			            sCurrentLat: String(r.point.lat)
+			        },
+			        url: host + "order.get",
+			        success: function (res) {
+			            if (!res.data) {
+			                go_alert2('订单不存在');
+			                goBack();
+			                return;
+			            }
+			            if (res.success) {
+			                if (res.data) {
+			                    app.info = res.data;
+			                    app.$nextTick(function () {
+			                        if (res.data.iType === 0 && res.data.iStatus === 0) {
+			                            setTimeout(function () {
+			                                bindChoice();
+			                            }, 0)
+			                        }
+			                        if (res.data.iType == 0 && (res.data.iStatus == 4 || res.data.iStatus == 5)) {
+			                            app.getTipList();
+			                            if (res.data.iStatus == 5) return;
+			                            app.getAppraiseList();
+			                        }
+			                        if (res.data.iType == 1 && app.info.iMemberID == app.userInfo.ID && (res.data.iStatus == 4 || res.data.iStatus == 5)) {
+			                            app.getTipList();
+			                            if (res.data.iStatus == 5) return;
+			                            app.getAppraiseList();
+			                        }
+			                        if (res.data.iStatus == 1 || res.data.iStatus == 2 || res.data.iStatus == 3) {
+			                            getPhone();
+			                        }
+			                        if (app.info.iMemberID == app.userInfo.ID && res.data.iStatus == 0) {
+			                            app.param.sCurrentLng = String(r.point.lng);
+			                            app.param.sCurrentLat = String(r.point.lat);
+			                            //app.param.sDepartureTimeBegin = res.data.sDepartureTime;
+			                            if (app.param.iType == 1) {
+			                                app.param.sPersonNumber = res.data.iPersonNumber;
+			                            } else {
+			                                app.param.sPersonNumber = res.data.iSeatNumber;
+			                            }
+			                            //app.param.sStartAddress = res.data.sStartAddress;
+			                            app.param.iType = res.data.iType?0:1;
+			                            app.getList();
+			                        } else {
+			                            if (res.data.iStatus != 6 && res.data.iStatus != 5 && res.data.iStatus != 4) {
+                                            loadMap(r);
+			                            }
+			                        }
+			                    });
+			                }
+			            } else {
+			                go_alert2(res.message);
+			            }
+			        }
+			    });
+			}
+		},
+		mounted: function(){
+			var urlParam = GetRequest();
+			this.urlParam = urlParam;
+			switch (switchOS()) {
+			    case 'android':
+			        WebViewJavascriptBridge.startLocation();
+			        break;
+			    case 'ios':
+			        try {
+			            webkit.messageHandlers.startLocation.postMessage("");
+			        }
+			        catch (e) { }
+			        break;
+			    case 'pc':
+			        var geolocation = new BMap.Geolocation();
+			        geolocation.getCurrentPosition(function (r) {
+			            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+			                app.getDetail(r)
+			            }
+			        })
+			}
+		}
+	});
+    //app坐标
+	function APPlocation(lng,lat) {
+	    app.getDetail({ point: { lng: String(lng), lat: String(lat) } });
+	}
+	//确认预约
+	function bindChoice(){
+		var otherData=[{id:1,name:"1人"},{id:2,name:"2人"},{id:3,name:"3人"},{id:4,name:"4人"},{id:5,name:"5人"},{id:6,name:"6人"}]
+		$(".otherChoice").touchSelect({
+			type:"other",
+			data:otherData,
+			callback:function(json,dom){
+				$.ajax({
+					type:"post",
+					data: {
+						iMemberID: JSON.parse(localStorage.getItem('userInfo')).ID
+					},
+					url: host+"coupon.getlist",
+					success: function(res){
+						if(!res.data.CouponList)return;
+						var flag = false;
+						for(var i = 0;i < res.data.CouponList.length;i++){
+							if(!res.data.CouponList[i].bIsUsed && !res.data.CouponList[i].iStatus){
+								flag = true;
+								break;
+							}
+						}
+						if(flag){
+							//选择支付提示
+							var html = '<div style="padding: .2rem 0;margin-left: -1.5rem"><label class="block color-orange pv01"><input name="payWay" type="radio" value="1" class="hide" checked /><span class="check_round_small"></span><i class="ml02 color-333">使用优惠券</i></label><label class="block color-orange pv01"><input type="radio" name="payWay" value="2" class="hide" /><span class="check_round_small"></span><i class="ml02 color-333">使用余额</i></label></div>';
+							go_confirm({
+								msg:[html,"#333"],
+								agree_text:["确定","#333"],
+							    cancel_text:["取消","#999"],
+								text_align:"left",
+								tag_set:{},
+								yesFunc:function(){
+									//1是优惠券，2是余额
+									console.log($('[name=payWay]:checked').val());
+									if($('[name=payWay]:checked').val() == 1){
+										appointment(1,json.id)
+									}else{
+										appointment(0,json.id)
+									}
+								},//回调函数,可以不设置，或者false
+								noFunc:function(){
+									
+								}//回调函数,可以不设置，或者false
+							});
+						}else{
+							appointment(0,json.id)
+						}
+					}
+				});
+				
+				
+				
+	           
+	        }
+		});
+	}
+	function appointment(sPayType,iPersonNumber){
+		var user = JSON.parse(localStorage.getItem('userInfo'));
+		
+		$.ajax({
+           	type:"post",
+           	data: {
+           		iOrderID: app.info.ID,
+           		iMemberID: app.userInfo.ID,
+           		iPersonNumber: iPersonNumber,
+           		sPayType: sPayType
+           	},
+           	url:host+"order.appoint",
+           	success: function(res){
+           		if(res.code == 405){
+           			//余额不足提示
+					go_confirm({
+						msg:["<p class='pv02'>您的余额不足<br/>请充值！</p>","#333"],
+						agree_text:["充值","#333"],
+					    cancel_text:["取消","#999"],
+						text_align:"center",
+						tag_set:{},
+						yesFunc:function(){
+							location.href = 'recharge.html';
+						},//回调函数,可以不设置，或者false
+						noFunc:function(){
+							
+						}//回调函数,可以不设置，或者false
+					});
+           		} else {
+           		    go_alert2(res.message);
+           		}
+           		if(res.success){
+           			setTimeout(function(){
+           				location.reload();
+           			},0)
+           		}
+           	}
+      });
+	}
+	//获取客服电话
+	function getPhone(){
+		$.ajax({
+			type:"post",
+			url: host+"settings.get",
+			success: function(res){
+				if(res.success){
+					app.sPhone = res.data.sPhone;
+				}
+			}
+		});
+	}
+	//地图渲染
+	function loadMap(r){
+	//2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B
+//		var map = new BMap.Map("bMap");
+//		map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
+	
+	
+	var map = new BMap.Map("bMap");
+	//多点定位视图自适应
+	var points = [];
+	
+	var mk = new BMap.Marker(r.point);
+	map.addOverlay(mk);
+	
+	//地图显示多点自适应
+	points.push({"lat":mk.point.lat,"lng":mk.point.lng});
+	points.push({"lat":app.info.sStartLatitude,"lng":app.info.sStartLongitude});
+	if(app.info.sPassAddress){
+		points.push({"lat":app.info.sPassLatitude,"lng":app.info.sPassLongitude});
+	}
+	points.push({"lat":app.info.sEndLatitude,"lng":app.info.sEndLongitude});
+	//points = points.concat([{"lat":30.68994285,"lng":104.06792346},{"lat":30.67994285,"lng":104.16792346},{"lat":30.57994285,"lng":104.26792346}]);
+
+	var view = map.getViewport(points);
+	var mapZoom = view.zoom;
+	var centerPoint = view.center;
+	map.centerAndZoom(centerPoint, mapZoom);
+	map.enableScrollWheelZoom(true);
+	
+	//计算定位到目的地的距离
+	var p1 = new BMap.Point(mk.point.lng, mk.point.lat);
+	var p2 = new BMap.Point(app.info.sStartLongitude, app.info.sStartLatitude);
+	var driving = new BMap.DrivingRoute(map, {
+		onSearchComplete: function(results){
+			if (driving.getStatus() != BMAP_STATUS_SUCCESS){
+				return ;
+			}
+			var plan = results.getPlan(0);
+			console.log(plan.getDistance(true));
+			//创建信息窗口
+			var geoc = new BMap.Geocoder();  
+			var opts = {
+					width : 200,     // 信息窗口宽度
+					height: 50,     // 信息窗口高度
+					enableMessage:true//设置允许信息窗发送短息
+		   		};
+			geoc.getLocation(p2, function(rs){
+				var addComp = rs.addressComponents;
+				console.log(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+				var content = "距离你："+plan.getDistance(true)+" <br/>我在："+app.info.sStartAddress;
+				var infoWindow = new BMap.InfoWindow("<b class='iw_poi_title'>距离你：" + plan.getDistance(true) + "</b><div class='iw_poi_content'>我在：" + app.info.sStartAddress + "</div>",opts);  // 创建信息窗口对象 
+				map.openInfoWindow(infoWindow,p2); //开启信息窗口
+				setTimeout(function(){
+					$('.BMap_bubble_title').parent().addClass('map-content');
+				},0)
+				
+				marker2.addEventListener("click",function(e){
+					map.openInfoWindow(infoWindow,p2); //开启信息窗口
+					setTimeout(function(){
+						$('.BMap_bubble_title').parent().addClass('map-content');
+					},0)
+				});
+			});
+		}
+	});
+	driving.search(p1, p2);
+	
+	//多点渲染
+	//起点
+	var pt = new BMap.Point(app.info.sStartLongitude, app.info.sStartLatitude);
+	var myIcon = new BMap.Icon("../img/slice/icon-yAddr.png", new BMap.Size(23,26));
+	var marker2 = new BMap.Marker(pt,{icon:myIcon});  // 创建标注
+	map.addOverlay(marker2);              // 将标注添加到地图中
+	
+	//途经点
+	if(app.info.sPassAddress){
+		var pt2 = new BMap.Point(app.info.sPassLongitude, app.info.sPassLatitude);
+		var myIcon2 = new BMap.Icon("../img/slice/icon-way.png", new BMap.Size(23,26));
+		var marker3 = new BMap.Marker(pt2,{icon:myIcon2});  // 创建标注
+		map.addOverlay(marker3);    
+	}
+	
+	//终点
+	var pt3 = new BMap.Point(app.info.sEndLongitude, app.info.sEndLatitude);
+	var myIcon3 = new BMap.Icon("../img/slice/map-end.png", new BMap.Size(23,26));
+	var marker4 = new BMap.Marker(pt3,{icon:myIcon3});  // 创建标注
+	map.addOverlay(marker4);
+			
+	}
+    //获取接单人紧急联系人
+	function getLinkPerson(id) {
+	    go_ajax({
+	        url: host + 'member.get',
+	        data: { iMemberID: id},
+	        success: function (res) {
+	            if (res.success) {
+	                if (res.data.sEmergencyContactPhone) {
+	                    location.href = 'tel:' + res.data.sEmergencyContactPhone;
+	                } else {
+	                    go_alert2('未设置紧急联系人');
+	                }
+	            }
+	        }
+	    })
+	}
+	function getPerson(id) {
+	    go_ajax({
+	        url: host + 'member.get',
+	        data: { iMemberID: id },
+	        success: function (res) {
+	            if (res.success) {
+	                if (res.data.sPhone) {
+	                    location.href = 'tel:' + res.data.sPhone;
+	                } else {
+	                    
+	                }
+	            }
+	        }
+	    })
+	}
+	//联系平台即可取消
+	function cancelOrder() {
+	    if (app.info.iStatus == 3) {
+	        if (app.info.iType == 0) {
+	            getLinkPerson(JSON.parse(localStorage.userInfo).ID);
+	        }
+	        if (app.info.iType == 1) {
+	            getLinkPerson(JSON.parse(localStorage.userInfo).ID);
+	        }
+	        return;
+	    }
+		go_confirm({
+			msg:["<p class='pv03'>联系平台即可取消</p>","#333"],
+			agree_text:["拨号","#333"],
+		    cancel_text:["取消","#999"],
+			text_align:"center",
+			tag_set:{},
+			yesFunc:function(){
+				location.href = 'tel:'+app.sPhone;
+			},//回调函数,可以不设置，或者false
+			noFunc:function(){
+				
+			}//回调函数,可以不设置，或者false
+		});
+	}
+
+    //联系车主/乘客
+	function cancelOrder2() {
+	    if (app.info.iStatus == 1 || app.info.iStatus == 2) {
+	        if (app.info.iMemberID == JSON.parse(localStorage.userInfo).ID) {
+	            getPerson(app.info.iRelMemberID);
+	        }
+	        else {
+	            getPerson(app.info.iMemberID);
+	        }
+	    }
+	}
+
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.info.iMemberID == app.userInfo.ID && app.info.iStatus == 0) {
+        		
+	            if (app.isLoad){
+	            	app.getList(true);
+					$(".moreText").html('加载中...');
+				}else{
+					$(".moreText").html('没有更多了');
+				}
+        	}
+        }
+    });
+	//打开评价
+	function openAppraise(){
+		$('.appraiseMask').show();
+	}
+	//关闭评价
+	function closeAppraise(){
+		$('.appraiseMask').hide();
+	}
+	//打开心意
+	function openMind(){
+		$('.xinyiMask').show();
+	}
+	//关闭心意
+	function closeMind(){
+		$('.xinyiMask').hide();
+	}
+</script>
+ 
+</html>

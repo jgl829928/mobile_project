@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>修改密码</h1>
+			</header>
+			<section class="flex_1 overflow_auto font24r relative">
+				<div class="Con">
+					<form style="box-shadow: none;" class="LoginForm m-t-120r bg-fff">
+						<p class="color-666">请输入旧密码(初始密码为123456)</p>
+						<div class="inputBox border-b-eee">
+							<input v-model="param.sOldLoginPwd" class="font28r wid100" type="password" placeholder="请输入旧密码" value="" />
+						</div>
+						<p class="color-666 mt03">请输入新密码</p>
+						<div class="inputBox border-b-eee">
+							<input v-model="param.sNewLoginPwd" class="font28r wid100" type="password" placeholder="必须包含数字加字母且不少于8位" value="" />
+						</div>
+						<p class="color-666 mt03">请确认新密码</p>
+						<div class="inputBox border-b-eee">
+							<input v-model="param.sNewLoginPwdComfirm" class="font28r wid100" type="password" placeholder="再次输入新密码" value="" />
+						</div>
+						<div class="text-center m-t-90r">
+							<input @click="submit" readonly class="keepBtn font24r" value="确定" name="" />
+						</div>
+					</form>
+				</div>
+			</section>
+	      	<!--手机号已注册-->
+			<div style="z-index: 1;" class="markBox2 hide font24r">
+	            <div style="width: 4.7rem;" class="mark overflow_hide">
+	            	<div class="Con text-center color-333 border-b-eee p-a-50r bg-fff">
+	            		该手机号已注册，可直接登录
+	            	</div>
+	            	<div class="hgt08rem bg-fff around-center ">
+	            		<button onclick="$('.markBox2').hide()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+	            		<button class="wid50 color-fff hgt08rem color-000 font24r">登录</button>
+	            	</div>
+	            </div>
+	      	</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			param: {
+				sOldLoginPwd: '',
+				sNewLoginPwd: '',
+				sNewLoginPwdComfirm: '',
+				sPhone: JSON.parse(localStorage.userInfo).sPhone
+			}
+		},
+		methods: {
+			checkForm: function(){
+				var pwdReg = /(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,}/
+				if(!this.param.sOldLoginPwd){
+					go_alert2('请输入旧密码')
+					return false
+				}
+				if(!this.param.sNewLoginPwd){
+					go_alert2('请输入新密码')
+					return false
+				}
+				if(!pwdReg.test(app.param.sNewLoginPwd)){
+					go_alert2('新密码格式不正确，必须包含数字加字母且不少于8位')
+					return false
+				}
+				if(app.param.sNewLoginPwd != app.param.sNewLoginPwdComfirm){
+					go_alert2('两次输入新密码不一致')
+					return false
+				}
+				return true
+			},
+			submit: function(){
+				if(this.checkForm()){
+					$.ajax({
+						type: 'post',
+						url: host + 'member.findpwd',
+						data: app.param,
+						success: function(res){
+							if(res.success){
+								go_alert2('修改成功')
+								setTimeout(function(){
+									history.back()
+								},2000)
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			}
+		},
+		mounted: function(){
+			
+		}
+	})
+
+</script>
+ 
+</html>

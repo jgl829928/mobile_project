@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的家庭成员</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+
+	</head>
+
+	<body>
+		<section id="app" class="myFamily main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<a id="addMember" href="javascript:void(0);"></a>
+				<h1>我的家庭成员</h1>
+			</header>
+			<div class="flex_1 overflow_auto pad20r bg-f7">
+				<!-- 模板 -->
+				<div @click="changeUser(idx, $event, item.bIsReviewed, item.ID)" v-for="(item, idx) in memberList" class="mod-wrap hgt18rem bg-fff p_both20r font22r m-b-30r relative">
+					<span v-if="item.iType == 0" :class="item.bIsReviewed == 1 ? 'is-pass' : 'not-pass'">本人</span>
+					<span v-if="item.iType == 1" :class="item.bIsReviewed == 1 ? 'is-pass' : 'not-pass'">父母</span>
+					<span v-if="item.iType == 2" :class="item.bIsReviewed == 1 ? 'is-pass' : 'not-pass'">配偶</span>
+					<span v-if="item.iType == 3" :class="item.bIsReviewed == 1 ? 'is-pass' : 'not-pass'">子女</span>
+					<p class="flex_dom flex_item_between flex_item_mid hgt06rem font24r">
+						<span class=""></span>
+						<span v-if="item.bIsReviewed == 1" class="color-orange">已通过</span>
+						<span v-if="item.bIsReviewed == 0" class="color-orange">审核中</span>
+						<span v-if="item.bIsReviewed == 2" class="color-orange">已拒绝</span>
+					</p>
+					<p class="flex_dom flex_item_mid m-t-15r">
+						<span class="text-center flex_dom flex_item_mid wid03rem flex_item_center"><img style="width: .26rem" src="../img/slice/icon-person.png" alt=""></span>
+						<span class="m-l-15r" v-cloak>{{item.sName}}</span>
+					</p>
+					<p class="flex_dom flex_item_mid m-t-15r">
+						<span class="text-center flex_dom flex_item_mid wid03rem flex_item_center"><img class="block" style="width: .2rem" src="../img/slice/icon-phone.png" alt=""></span>
+						<span class="m-l-15r" v-text="tPhone(item.sPhone)"></span>
+					</p>
+					<div style="right: .2rem;bottom: .2rem" class="font22r abolute flex_dom">
+						<a v-if="idx != 0" @click.stop="toEditMyMember(item, $event)" style="line-height: .4rem;width: 1.2rem;" class="zyl-btn2 hgt04rem color-fff">编辑</a>
+						<button v-if="idx != 0" @click.stop="del(item.ID, $event)" style="line-height: .4rem;width: 1.2rem;" class="zyl-btn2 hgt04rem m-l-20r">删除</button>
+					</div>
+					<span v-if="item.ID == userInfo.ID" style="right: .2rem;bottom: .8rem;" class="font22r abolute color-ffa127">当前账号</span>
+				</div>
+				<div v-if="memberList && memberList.length == 0" class="no_data">
+					<p>暂无家庭成员</p>
+				</div>
+			</div>
+
+			<a href="addMember.html" class="zyl-btn2 color-fff">新增家庭成员</button>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script>
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			memberList: []
+		},
+		methods: {
+			getMemberList: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'member.getlistbyid',
+					data: {iMemberID: this.userInfo.ID},
+					success: function(res){
+						app.memberList = res.data
+					}
+				})
+			},
+			toEditMyMember: function(item, e){
+				location.href = 'editMyMember.html?' + 'id=' + item.ID + '&sPhone=' + item.sPhone
+				e.stopPropagation()
+			},
+			tPhone: function(phone){
+				return phone.substring(0,3) + "****" + phone.substring(8,11)
+			},
+			del: function(id, event){
+				$.ajax({
+					type: 'post',
+					url: host + 'member.delfamilymember',
+					data: {iMemberID: id},
+					success: function(res){
+						go_alert2(res.message)
+						app.getMemberList()
+					}
+				})
+			},
+			changeUser: function(idx, e, bIsReviewed, id){
+				if(bIsReviewed == 1){
+					if(id == app.userInfo.ID){
+						return false
+					} else {
+						$.ajax({
+							type: 'post',
+							url: host + 'member.getinfo',
+							data: {iMemberID: app.userInfo.ID, iAfterMemberID: id},
+							success: function(res){
+								if(res.success){
+									go_alert2('切换用户成功')
+									console.log(idx, app.memberList[idx])
+									localStorage.userInfo = JSON.stringify(app.memberList[idx])
+									app.userInfo = app.memberList[idx]
+									app.getMemberList()
+								} else {
+									go_alert2(res.message)
+								}
+							}
+						})
+					}
+				} else if(bIsReviewed == 0){
+					go_alert2('账号审核中')
+				} else if(bIsReviewed == 2){
+					go_alert2('账号审核被拒绝')
+				}
+			}
+		},
+		mounted: function(){
+			this.getMemberList()
+		}
+	})
+
+</script>
+ 
+</html>

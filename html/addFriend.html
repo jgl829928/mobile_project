@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>添加好友</h1>
+			</header>
+			<section class="flex_1 bg-f7 overflow_auto font24r relative">
+				<div class="Con">
+					<form action="" method="post" class="bg-fff l-pad20">
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">社区:</span>
+							<div class="center-end wid47rem">
+                                <div class="wid33 p-r-10r p-l-10r border-r-eee">
+                                    <input @focus="openSearchTab('sRegionID')" type="text" name="" placeholder="区县" class="sRegionID iconBot only_line placeholder-999 font24r text-center wid100 p-r-10r" value="" />
+                                </div>
+                                <div class="wid33 p-r-10r p-l-10r border-r-eee">
+                                    <input @focus="openSearchTab('sStreetID')" type="text" name="" placeholder="街道" class="sStreetID iconBot only_line  placeholder-999 font24r otherChoice2 text-center wid100 p-r-10r" value="" />
+                                </div>
+                                <div class="wid33 p-r-10r p-l-10r">
+                                    <input @focus="openSearchTab('sCommunityID')" type="text" name="" placeholder="社区" class="sCommunityID iconBot only_line  placeholder-999 otherChoice3 font24r text-center wid100 p-r-10r" value="" />
+                                </div>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">车辆品牌：</span>
+							<div class="center-end wid45rem">
+								<input @focus="openSearchTab('sVehicleBrand')" type="text" name="" placeholder="请选择" class="sVehicleBrand iconRight color-000 otherChoice4 font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">车辆型号：</span>
+							<div class="center-end wid45rem">
+								<input @focus="openSearchTab('sVehicleModel')" type="text" name="" placeholder="请选择" class="sVehicleModel iconRight color-000 otherChoice5 font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">车牌号：</span>
+							<div class="center-end wid47rem">
+								<div class="wid50 p-r-10r p-l-10r border-r-eee">
+									<input @focus="openSearchTab('sVehicleAscription')" type="text" name="" placeholder="请选择" class="sVehicleAscription iconBot only_line color-000 font24r otherChoice6 text-center wid100 p-r-10r" value="" />
+								</div>
+								<div class="wid50 p-r-10r p-l-10r">
+									<input v-model="submitData.sLicensePlate" type="text" name=""  placeholder="请填写" class="sLicensePlate wid100 only_line color-000 font24r text-right" value="" />
+								</div>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">年龄段：</span>
+							<div class="center-end wid47rem">
+								<div class="wid50 p-r-10r p-l-10r border-r-eee">
+									<input type="text" name="" placeholder="请选择" class="iconBot only_line color-000 font24r otherChoice7 text-center wid100 p-r-10r" value="" />
+								</div>
+								<div class="wid50 p-r-10r p-l-10r">
+									<input type="text" name="" placeholder="请选择" class="iconBot only_line color-000 font24r otherChoice8 text-center wid100 p-r-10r" value="" />
+								</div>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">姓名：</span>
+							<div class="center-end wid47rem">
+								<input v-model="submitData.sName" type="text" name=""   placeholder="模糊搜索" class="color-000 font24r text-right wid100" value="" />
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">职业：</span>
+							<div class="center-end wid47rem">
+								<input v-model="submitData.sOccupation" type="text" name=""   placeholder="模糊搜索" class="color-000 font24r text-right wid100" value="" />
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">爱好：</span>
+							<div class="center-end wid47rem">
+								<input v-model="submitData.sInterest" type="text" name=""   placeholder="模糊搜索" class="color-000 font24r text-right wid100" value="" />
+							</div>
+						</div>
+					</form>
+				</div>
+			</section>
+			<div class="bg-ffa127 wid100 font24r color-fff between hgt08rem">
+				<button onclick="goBack()" class="hgt08rem bg-fff color-ffa127 wid50">取消</button>
+				<button @click="submit" class="hgt08rem wid50 bg-ffa127 color-fff">确定</button>
+            </div>
+              <!-- 搜索页面 -->
+			<div class="searchTab font24r">
+				<p class="relative hgt07rem flex_dom flex_item_mid flex_item_center">
+					<a @click="closeSearchTab" class="closeSearchTab" href="javascript:;"></a>
+					<input v-model="userInput" placeholder="请输入搜索内容" class="bg-f7 wid70 p-v-10r radius02r p_both20r font24r" type="text">
+				</p>
+				<div style="overflow: auto;padding-bottom: .7rem" class="hgt_full">
+					<p class="hgt04rem"></p>
+                    <p v-if="searchTabResult.length <= 0 && !userInput" @click="userChoose(item)" v-for="(item,index) in searchTabInit" class="hgt065rem l-h-065rem p_both20r border-b-eee">{{item.sName || item.sContent || item.sColor}}</p>
+                    <p v-if="searchTabResult.length" @click="userChoose(item)" v-for="(item,index) in searchTabResult" class="hgt065rem l-h-065rem p_both20r border-b-eee">{{item.sName || item.sContent || item.sColor}}</p>
+				</div>
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+    getUserInfo()
+    var app = new Vue({
+        el: ".main",
+        data: {
+            queryinit: {}, 		// 所有初始化数据
+            searchTabInit: [], 		// 搜索初始化数据
+            searchTabResult: [],		// 搜索结果
+            userInput: "",			// 用户输入
+            category: "", 		// 用户选择哪个模块
+            submitData: {},
+            
+        },
+        methods: {
+            closeSearchTab: function () {
+                $(".searchTab").hide()
+                app.userInput = ""
+                app.searchTabResult = []
+            },
+            openSearchTab: function (category) {
+                $(".searchTab").show()
+                $(".searchTab input").focus()
+                app.judgeCategory(category)
+            },
+            userChoose: function (item) {
+                app.setUserChoose(item)
+                app.closeSearchTab()
+            },
+            judgeCategory: function (category) {
+                app.category = category
+                switch (category) {
+                    case 'sRegionID':
+                        app.searchTabInit = app.queryinit.RegionList
+                        break;
+                    case 'sStreetID':
+                        if ($(".sRegionID").val() == '') {
+                            go_alert2("请先选择区/县")
+                            app.closeSearchTab()
+                        }
+                        else {
+                            app.getSteetList()
+                        }
+                        break;
+                    case 'sCommunityID':
+                        if ($(".sStreetID").val() == '') {
+                            go_alert2("请先选择街道")
+                            app.closeSearchTab()
+                        }
+                        else {
+                            app.getiCommunityIDList()
+                        }
+                        break;
+                    case 'sVehicleBrand':
+                        app.searchTabInit = app.queryinit.CarBrandList
+                        break;
+                    case 'sVehicleModel':
+                        if ($(".sVehicleBrand ").val() == '') {
+                            go_alert2("请先选择车辆品牌")
+                            app.closeSearchTab()
+                        }
+                        else {
+                            app.getCarModelList()
+                        }
+                        break;
+                    case 'sVehicleAscription':
+                        app.searchTabInit = app.queryinit.LicensePlateLocationList
+                        break;
+                    // case 'sVehicleColor':
+                    //     app.searchTabInit = app.queryinit.VehicleColorList
+                    //     break;
+                    // case 'sOccupation':
+                    //     app.searchTabInit = app.queryinit.OccupationList
+                    //     break;
+                }
+            },
+            setUserChoose: function (item) {
+                $("." + app.category).val(item.sName || item.sContent || item.sColor)
+                // Vue.set(app.submitData, app.category, item.ID)
+                // console.log(app.category)
+                if ((app.category == 'iRegionID') || (app.category == 'iStreetID') || (app.category == 'iCommunityID')) {
+                    Vue.set(app.submitData, app.category, item.ID)
+                }
+                if (app.category == 'iRegionID') {
+                    app.submitData.iStreetID = null
+                    app.submitData.iCommunityID = null
+                    $('.iStreetID').val('')
+                    $('.iCommunityID').val('')
+                }
+                if (app.category == 'iStreetID') {
+                    app.submitData.iCommunityID = null
+                    $('.iCommunityID').val('')
+                }
+                if (app.category == 'sVehicleBrand') {
+                    app.submitData.sVehicleModel = ''
+                    $('.sVehicleModel').val('')
+                }
+                if ((app.category == 'sVehicleBrand') || (app.category == 'sVehicleModel') || (app.category == 'sOccupation')) {
+                    Vue.set(app.submitData, app.category, item.sName)
+                }
+                if ((app.category == 'sVehicleBrand')) {
+                    $('.sVehicleBrand')[0].id = item.ID
+                }
+                if (app.category == 'sVehicleAscription') {
+                    Vue.set(app.submitData, app.category, item.sContent)
+                }
+                if (app.category == 'sVehicleColor') {
+                    Vue.set(app.submitData, app.category, item.sColor)
+                }
+            },
+            getSteetList: function () {
+                $.ajax({
+                    type: 'post',
+                    data: { iRegionID: app.submitData.sRegionID },
+                    url: host + "loc.getstreetlist",
+                    success: function (res) {
+                        app.searchTabInit = res.data
+                    }
+                })
+            },
+            getiCommunityIDList: function () {
+                $.ajax({
+                    type: 'post',
+                    data: { iStreetID: app.submitData.sStreetID },
+                    url: host + "loc.getcommunitylist",
+                    success: function (res) {
+                        app.searchTabInit = res.data
+                    }
+                })
+            },
+            getCarModelList: function () {
+                $.ajax({
+                    type: 'post',
+                    data: { iCarTypeID: $('.sVehicleBrand')[0].id },
+                    url: host + "car.getmodel",
+                    success: function (res) {
+                        app.searchTabInit = res.data
+                    }
+                })
+            },
+            submit: function () {
+                localStorage.searchFriend = JSON.stringify(app.submitData)
+                var str = JSON.stringify(app.submitData)
+                console.log(str)
+                //if(str == '{}'){
+                //    go_alert2('请填写检索信息')
+                //} else {
+                    location.href = 'friendSearchResult.html'
+                //}
+            }
+        },
+        mounted: function () {
+            $.ajax({
+                type: 'post',
+                url: host + "friend.queryinit",
+                success: function (res) {
+                    app.queryinit = res.data
+                }
+            })
+        },
+        watch: {
+            userInput: function(){
+				app.searchTabResult = []
+				if(app.userInput != ""){
+					for(item of app.searchTabInit){
+						var match = item.sName || item.sContent || item.sColor
+						if(match.indexOf(app.userInput) >= 0){
+							app.searchTabResult.push(item)
+						}
+					}
+				}
+				
+			}
+        }
+    })
+
+
+
+
+	$(function(){
+		
+		// var otherData=[{id:1,name:"吃饭"},{id:1,name:"睡觉"},{id:2,name:"打游戏"}]
+		// $(".otherChoice").touchSelect({
+		// 	type:"other",
+		// 	data:otherData,
+		// 	callback:function(val,dom){
+	    //        console.log(dom)
+      	
+	    //     }
+		// })
+		// $(".otherChoice2").touchSelect({
+		// 	type:"other",
+		// 	data:otherData,
+		// 	callback:function(val,dom){
+	    //        console.log(dom)
+      	
+	    //     }
+		// })
+		// $(".otherChoice3").touchSelect({
+		// 	type:"other",
+		// 	data:otherData,
+		// 	callback:function(val,dom){
+	    //        console.log(dom)
+      	
+	    //     }
+		// })
+		// $(".otherChoice4").touchSelect({
+		// 	type:"other",
+		// 	data:otherData,
+		// 	callback:function(val,dom){
+	    //        console.log(dom)
+      	
+	    //     }
+		// })
+		// $(".otherChoice5").touchSelect({
+		// 	type:"other",
+		// 	data:otherData,
+		// 	callback:function(val,dom){
+	    //        console.log(dom)
+      	
+	    //     }
+		// })
+		// $(".otherChoice6").touchSelect({
+		// 	type:"other",
+		// 	data:otherData,
+		// 	callback:function(val,dom){
+	    //        console.log(dom)
+      	
+	    //     }
+		// })
+		var ageData = [];
+		for (var i = 22; i < 99; i++) {
+		    var age = new Object();
+		    age.id = i;
+		    age.name = i;
+		    ageData.push(age);
+		}
+
+		$(".otherChoice7").touchSelect({
+			type:"other",
+			data: ageData,
+			callback: function (val, dom) {
+                console.log(dom,val)
+                app.submitData.sAgeBegin = val.name
+			}
+		})
+		$(".otherChoice8").touchSelect({
+			type:"other",
+			data: ageData,
+			callback: function (val, dom) {
+                console.log(dom)
+                app.submitData.sAgeEnd = val.name
+			}
+		})
+	})
+</script>
+ 
+</html>

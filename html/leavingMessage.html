@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>留言</h1>
+			</header>
+			<section class="flex_1 bg-f7 overflow_auto font24r relative">
+				<div class="Con bg-fff l-pad20 p-b-20r">
+					<div class="hgt08rem center">
+						欢迎您留下意见或建议
+					</div>
+					<div class="bg-f7 hgt20rem radius02r">
+						<textarea v-model="sContent" class="levMsg wid100 hgt14rem" name="" maxlength="100" placeholder="请点击输入建议或者意见" rows="" cols=""></textarea>
+						<p class="text-right l-pad20">1-100字</p>
+					</div>
+				</div>
+				
+			</section>
+			<div @click="submit" class="bg-ffa127 font24r color-fff around-center hgt08rem">
+				提交
+			</div>
+
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			sContent: ''
+		},
+		methods: {
+			submit: function(){
+				if(app.checkForm()){
+					$.ajax({
+						type: 'post',
+						url: host + 'cmt.add',
+						data: {
+							iMemberID: this.userInfo.ID,
+							sContent: this.sContent
+						},
+						success: function(res){
+							if(res.success){
+								go_alert2('留言成功，即将跳转到个人中心')
+								setTimeout(function(){
+									location.href = 'myInfo.html'
+								},2000)
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			},
+			checkForm: function(){
+				if(!app.sContent){
+					go_alert2('必须至少输入一个字符')
+					return false
+				}
+				return true
+			}
+		}
+	})
+	
+</script>
+ 
+</html>

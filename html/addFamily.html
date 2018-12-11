@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+		<style type="text/css">
+			.iconRight{
+				background: url(../img/slice/icon_right.png) no-repeat right center !important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column" id="app">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>新增家庭成员</h1>
+			</header>
+			<section class="flex_1 overflow_auto bg-f7 font24r relative">
+				<div class="Con l-pad20 bg-fff">
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666"><i class="color-red">*</i>关系类型</span>
+						</div>
+						<div class="center-end wid47rem">
+							<input type="text" name="relation"  readonly="readonly" placeholder="请选择关系类型" class="iconRight color-666 otherChoice font24r text-right wid100" value="" />
+						</div>
+					</div>
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 "><i class="color-red">*</i>姓名</span>
+						</div>
+						<input type="text" name="sName" class="wid50 only_line text-right" placeholder="请填写姓名" value="" />
+					</div>
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 "><i class="color-red">*</i>手机号</span>
+						</div>
+						<input type="text" name="sPhone" class="wid50 only_line text-right" placeholder="请填写手机号" value="" />
+					</div>
+					<div class="p-t-20r  p-b-20r">
+						<p class="color-666"><i class="color-red">*</i>身份证照片(手持)</p>
+						<div class="between mt01 fileBox l-pad40">
+							<div class="column-center-b">
+								<div class="wid20rem picArea relative">
+									<img class="wid20rem hgt1rem abolute fileImg" src="../img/slice/newfile.png"/>
+									<input class="flieline" type="file"  value="" />
+									<img class="closeImg wid03rem" src="../img/slice/icon_close.png"/>
+								</div>
+								<span class="color-666">上传身份证正面</span>
+							</div>
+							<div class="column-center-b">
+								<div class="wid20rem picArea relative">
+									<img class="wid20rem hgt1rem abolute fileImg" src="../img/slice/newfile.png"/>
+									<input class="flieline" type="file"  value="" />
+									<!--<img class="closeImg wid03rem" src="../img/slice/icon_close.png"/>-->
+								</div>
+								<span class="color-666">上传身份证反面</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="hgt08rem l-pad20 bg-f7 l-h-08rem center">
+					<label><input name="clause" type="checkbox" checked /><span class="check_fang2"></span><i class="ml01">我已阅读并同意</i></label><em onclick="$('.markBox').show()" class="color-ffa127">《平台条款》</em>
+				</div>
+			</section>
+			<div class="bg-ffa127 font24r color-fff around-center hgt08rem" @click="submitAudit">
+				提交审核
+			</div>
+			<!--平台条款弹窗-->
+			<div style="z-index: 1;" class="markBox hide font22r">
+	            <div style="width: 4.7rem;background-color:#FFFFFF;" class="mark l-pad20A">
+	            	<div style="max-height: 6rem;" class="l-h-04rem color-666 Con overflow_auto">
+	            		<p class="text-center font30r color-000">平台条款</p>
+	            		1.读取后台设置的汇率
+						2.最少兑换量由后台设置，当前可兑换量读取金币总数
+						3.输入兑换金币数量后自动读取汇率，显示可获得的HEC数量（精确到小数点后两位，多出的位数四舍五入），金币数量必须为大于0的整数
+						4.点击提交时，判断金币数量，如果小于最小兑换量提示“兑换金币数量过少”，2s后提示自动消失；如果大于当前可兑换数量，提示“兑换
+	            	</div>
+	            	<img onclick="$('.markBox').hide()" class="picClose" src="../img/slice/icon_close.png"/>
+	            </div>
+	      	</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	getUserInfo()
+
+	 var app = new Vue({
+	 	el: '#app',
+	 	data: {
+	 		iType: 1
+	 	},
+	 	methods: {
+	 		submitAudit: function(){
+	 			var relation = $('[name=relation]').val();
+	 			var sName = $('[name=sName]').val();
+	 			var sPhone = $('[name=sPhone]').val();
+	 			if(relation == ''){
+	 				go_alert2('请选择关系类型');
+	 				return;
+	 			}
+	 			if(sName == ''){
+	 				go_alert2('请填写名字');
+	 				return;
+	 			}
+	 			var res = /^1[0-9]{10}$/;
+	 			if(!res.test(sPhone)){
+	 				go_alert2('请填写正确的手机号');
+	 				return;
+	 			}
+	 			//需要判断图片
+	 			
+	 			if(!$('[name=clause]').prop('checked')){
+	 				go_alert2('请同意平台条款');
+	 				return;
+	 			}
+	 			var userInfo = JSON.parse(localStorage.getItem('userInfo'))
+	 			$.ajax({
+	 				type:"post",
+	 				data: {
+	 					iMainID: userInfo.iMainID ? userInfo.iMainID : userInfo.ID,
+	 					sPhone: sPhone,
+	 					iType: app.iType,
+	 					sName: sName,
+	 					sIDCardFront: 'http://41',//身份证正面照
+	 					sIDCardBack: 'http://42'//身份证背面照
+	 				},
+	 				url: host+"member.regfamily",
+	 				success: function(res){
+	 					go_alert(res.message,function(){
+	 						
+	 					});
+	 				}
+	 			});
+	 		}
+	 	}
+	 })
+	var otherData=[{id:1,name:"父母"},{id:2,name:"配偶"},{id:3,name:"子女"}]
+		$(".otherChoice").touchSelect({
+			type:"other",
+			data:otherData,
+			callback:function(val,dom){
+	           console.log(val)
+	           app.iType = val.id;
+	        }
+		})
+</script>
+ 
+</html>

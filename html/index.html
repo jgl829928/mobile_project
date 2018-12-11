@@ -1,0 +1,548 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>首页</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <style>
+            .otherChoice:after{
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -webkit-transform: translate(-50%,-50%);
+                transform: translate(-50%,-50%);
+                width: 3rem;
+                height: .6rem;
+            }
+        </style>
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column bg-f7" id="app">
+			<div class="flex_1 overflow_auto" id="scrollCtt">
+				<div class="indexHeader relative">
+					<div class="indexTitle">
+						<a href="javascript:;" class="indexAddr">
+							<img src="../img/slice/icon-addr.png" alt="" />
+							<span class="font22r color-000 only_line" id="city">成都</span>
+						</a>
+						<div>
+							<a class="text-center block" href="javascript:;">
+								<span class="font24r color-000 otherChoice relative">乘客</span>
+								<i class="sanjiao-bottom color-orange"></i>
+							</a>
+						</div>
+						<!--有未读的： noRead-->
+						<a :class="['indexMsg', isRead?'noRead':'']" onclick="isWeixin('mail.html')">
+							<img src="../img/slice/icon-msg.png" alt="" />
+						</a>
+					</div>
+					<div class="swiper-container" style="height: 3.6rem;">
+						<div class="swiper-wrapper">
+						    <div class="swiper-slide" v-for="item in bannerList">
+						    	<a @click="swiperClick(item)" class="indexSwiperSlide coverImg" :style="{backgroundImage: 'url('+item.sImageSrc+')'}" href="javascript:;"></a>
+						    </div>
+						</div>
+						<div class="swiper-pagination"></div>
+					</div>
+				</div>
+				<a class="flex_dom flex_item_mid flex_item_around hgt17rem bg-fff mb02" href="javascript:;">
+					<div class="text-center" @click="goAddOrder()">
+						<img class="wid05rem" src="../img/slice/icon-stroke.png" alt="" />
+						<p class="font22r color-000">发布行程</p>
+					</div>
+				</a>
+				<div id="bMap"></div>
+				<a onclick="openFilter()" class="flex_dom flex_item_mid flex_item_between ph02 hgt08rem bg-fff mb01" href="javascript:;">
+					<span class="font26r color-000" v-cloak>{{param.iType === 0?"附近车主":"附近乘客"}}</span>
+					<span class="font22r color-000">筛选<i class="sanjiao-right color-orange vertical_mid ml01"></i></span>
+				</a>
+				<div class="">
+					<a @click="goDetail(item.ID)" class="block mb01 bg-fff ph02" v-for="item in orderList" href="javascript:;" v-cloak>
+						<div class="flex_dom pv02">
+							<div class="cur_head coverImg" :style="{backgroundImage: 'url('+(item.sMemberImageSrc?item.sMemberImageSrc:'../img/slice/defaultHeader.png')+')'}"></div>
+							<div class="flex_1 ph02">
+								<div class="hgt04rem l-h-04rem flex_dom flex_item_mid">
+									<div class="flex_1">
+										<span class="font28r only_line boxName">{{item.sMemberName | filterName}}{{item.iMemberGender?(item.iMemberGender==1?"先生":"女士"):""}}</span>
+										<button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 1">随员</button>
+										<button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 2">三秘</button>
+										<button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 3">二秘</button>
+										<button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 4">一秘</button>
+										<button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 5">参赞-{{item.sOccupation}}</button>
+										<button class="p_icon1 bg-orange color-fff" v-if="item.iMemberLevel == 6">大使</button>
+									</div>
+									<span class="color-orange font22r" v-if="item.iType === 1 && item.iStatus == 0">待接单</span>
+									<span class="color-orange font22r" v-if="item.iType === 0 && item.iStatus == 0">待预约</span>
+									<span class="color-orange font22r" v-if="item.iStatus == 1">已预约</span>
+									<span class="color-orange font22r" v-if="item.iStatus == 2">已接单</span>
+									<span class="color-orange font22r" v-if="item.iStatus == 3">进行中</span>
+									<span class="color-000 font22r" v-if="item.iStatus == 4">已完成</span>
+									<span class="color-orange font22r" v-if="item.iStatus == 5">已评价</span>
+									<span class="color-000 font22r" v-if="item.iStatus == 6">已取消</span>
+								</div>
+								<div class="font22r flex_dom">
+									<div class="flex_1">
+										<img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+										<em>{{item.sMemberIntegral}}</em>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="border-t-eee flex_dom pv015">
+							<div class="flex_1 color-000 font22r">
+								<p class="font24r only_line">{{item.sCommunity}}-{{item.sVehicleInfo}}</p>
+								<p class="flex_dom flex_item_mid l-h-04rem mt005">
+									<img class="wid026rem mr01" src="../img/slice/icon-clock.png" alt="" />
+									<span class="flex_1 only_line">{{item.sDepartureTime}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-04rem mt005">
+									<img class="wid026rem mr01" src="../img/slice/icon-yuan.png" alt="" />
+									<span class="flex_1 only_line">{{item.sStartAddress}}</span>
+								</p>
+							<p class="flex_dom flex_item_mid l-h-04rem mt005" v-if="item.sPassAddress">
+								<img class="wid026rem mr01" src="../img/slice/icon-way.png" alt="" />
+								<span class="flex_1 only_line">{{item.sPassAddress}}</span>
+							</p>
+								<p class="flex_dom flex_item_mid l-h-04rem mt005">
+									<img class="wid026rem mr01" src="../img/slice/icon-yAddr.png" alt="" />
+									<span class="flex_1 only_line">{{item.sEndAddress}}</span>
+								</p>
+							</div>
+							<span class="font22r color-000">随行<em class="font26r font-w6">{{item.iType ? item.iPersonNumber: item.iSeatNumber}}</em>人</span>
+						</div>
+					</a>
+					<div v-if="orderList.length == 0" style="top:.5rem;position:relative; height: 2.5rem;display: none;" class="no_data">
+	                    <p class="color-999">暂无数据</p>
+	                </div>
+					<p v-if="orderList.length > 0" class="color-999 font24r text-center moreText pv02" v-cloak></p>
+				</div>
+			</div>
+			<footer class="curFooter flex_dom">
+				<a class="flex_1 active" onclick="location.reload()" href="javascript:;">首页</a>
+				<a class="flex_1" onclick="isWeixin('distance.html')" href="javascript:;">行程</a>
+				<a class="flex_1" href="community.html">社区</a>
+				<a class="flex_1" onclick="isWeixin('myInfo.html')" href="javascript:;">我的</a>
+			</footer>
+			
+			<!--筛选弹窗-->
+			<div class="mask indexFilterMask hide" onclick="closeFilter()"></div>
+			<div class="maskRight font24r flex_column bg-f7 toRight">
+				<div class="ph02 bg-fff">
+					<div class="flex_dom pv03 border-b-eee">
+						<span class="mr01 color-666">出发地：</span>
+						<input class="text-right placeholderccc flex_1" v-model="param.sStartAddress" type="text" placeholder="你从哪儿出发" />
+					</div>
+					<label class="flex_dom pv02 border-b-eee">
+						<span class="mr01 color-666">目的地：</span>
+						<input class="text-right placeholderccc flex_1" type="text" placeholder="你要去哪儿" />
+					</label>
+					<div class="flex_dom flex_item_mid border-b-eee">
+						<span class="flex_1 color-666">出发时间：</span>
+						<input type="text" v-model="param.sDepartureTimeBegin" class="flex_1 pv03 font20r placeholderccc date1" date-choice start-date onclick="$(this).blur()" placeholder="请填写时间" />
+						<i class="border-l-eee hgt03rem"></i>
+						<input type="text" v-model="param.sDepartureTimeEnd" class="flex_1 pv03 font20r text-right placeholderccc date1" date-choice end-date onclick="$(this).blur()" placeholder="请填写时间" />
+					</div>
+					<div class="flex_dom pv025">
+						<span class="flex_1 color-666">随行人数：</span>
+						<div class="countBox flex_dom flex_item_mid">
+							<button class="minusBtn" @click="changeNum(0)"></button>
+							<input type="text" v-model="param.sPersonNumber" readonly onclick="$(this).blur()" />
+							<button class="plusBtn" @click="changeNum(1)"></button>
+						</div>
+					</div>
+				</div>
+				<div class="flex_1"></div>
+				<div class="flex_dom">
+					<button onclick="closeFilter()" class="flex_1 hgt08rem font22r bg-fff color-orange font-w6 font22r">取消</button>
+					<button @click="goFilter()" class="flex_1 hgt08rem font22r color-fff bg-orange font-w6 font22r">确定 </button>
+				</div>
+			</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/vue.min.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B"></script>
+
+<script type="text/javascript" src="../lib/touchSelect.js"></script>	
+<script type="text/javascript">
+	getUserInfo()
+	var map = new BMap.Map("bMap");
+	var geoc = new BMap.Geocoder();
+	var app = new Vue({
+		el: '#app',
+		data: {
+			bannerList: [],
+			orderList: [],
+			param: {
+				page: 1,
+				iType: 0,
+				sCurrentLng: '',
+				sCurrentLat: '',
+				sStartAddress: '',
+				sEndAddress: '',
+				sDepartureTimeBegin: '',
+				sDepartureTimeEnd: '',
+				sPersonNumber: ''
+			},
+		    startAddress: '',
+			isRead: false,
+			flag: true,
+			isLoad: true,
+            isSearch: false,
+			userInfo: JSON.parse(localStorage.getItem('userInfo')) || {}
+		},
+		filters: {
+		    filterName: function (value) {
+		        if (!value) return;
+		        var str = '';
+		        for (var i = 0; i < value.length - 1; i++) {
+		            str += '*';
+		        }
+		        console.log(str.substring(0, 1) + str);
+		        return value.substring(0, 1) + str;
+		    }
+		},
+		methods: {
+			//发布行程选择角色跳转
+		    goAddOrder: function () {
+		        //if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+		        //    bindPhone()
+		        //} else {
+		        //    location.href = "chooseRole.html";
+		        //}
+		        isWeixin("chooseRole.html")
+		        //if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+		        //    $.ajax({
+		        //        type: 'post',
+		        //        url: host + 'member.wechatlogin',
+		        //        data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+		        //        success: function (res) {
+		        //            if (res.success.bIsReviewed == 0) {
+		        //                go_alert2('账号审核中', setTimeout(function () {
+                //                    location.href = 'login.html'
+		        //                }, 2000))
+		        //            }
+		        //            else if(res.success.bIsReviewed == 2){
+		        //                go_alert2('账号审核被拒绝', setTimeout(function(){
+		        //                    location.href = 'login.html'
+		        //                }, 2000))
+		        //            } else if (res.success.bIsReviewed == 1) {
+		        //                var userInfo = res.data
+		        //                localStorage.userInfo = JSON.stringify(userInfo)
+		        //                location.href = "chooseRole.html"
+		        //            }
+                            
+		        //                //location.href = 'index.html'
+		        //        }
+		        //    })
+		        //}
+			},
+			//跳转详情
+		    goDetail: function (id) {
+		        //if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+		        //    bindPhone()
+		        //} else {
+		        //    location.href = "orderDetail.html?id=" + id + '&type=1';
+		        //}
+		        isWeixin("orderDetail.html?id=" + id + '&type=1')
+		        //if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+		        //    $.ajax({
+		        //        type: 'post',
+		        //        url: host + 'member.wechatlogin',
+		        //        data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+		        //        success: function (res) {
+		        //            if (res.success.bIsReviewed == 0) {
+		        //                go_alert2('账号审核中', setTimeout(function () {
+		        //                    location.href = 'login.html'
+		        //                }, 2000))
+		        //            }
+		        //            else if (res.success.bIsReviewed == 2) {
+		        //                go_alert2('账号审核被拒绝', setTimeout(function () {
+		        //                    location.href = 'login.html'
+		        //                }, 2000))
+		        //            } else if (res.success.bIsReviewed == 1) {
+		        //                var userInfo = res.data
+		        //                localStorage.userInfo = JSON.stringify(userInfo)
+		        //                location.href = "orderDetail.html?id=" + id + '&type=1';
+		        //            }
+
+		        //            //location.href = 'index.html'
+		        //        }
+		        //    })
+		        //}
+			},
+			//筛选
+			goFilter: function(){
+				$('.moreText').html('');
+				app.param.page = 1;
+				$('.indexFilterMask').hide();
+				$('.maskRight').addClass('toRight');
+				app.isSearch = true;
+				app.getList();
+			},
+			//轮播图点击事件
+			swiperClick: function (item) {
+			    //if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+			    //    bindPhone()
+			    //} else {
+			    //    location.href = item.sLink;
+			    //}
+			    isWeixin(item.sLink)
+			},
+			//获取附近
+			getList: function (fenye) {
+			    var param = app.param;
+			    if (!app.isSearch) {
+			        param.sPersonNumber = '';
+			        param.sStartAddress = '';
+			    }
+				//获取附近
+				if(app.flag){
+					app.flag = false;
+					$.ajax({
+						type:"post",
+						data: param,
+						url: host+"order.loclist",
+						success: function(res){
+							app.flag = true;
+							if(res.success){
+            					app.param.page = app.param.page + 1;
+								if(res.data.length == 0){
+									app.isLoad = false;
+								}else{
+									app.isLoad = true;
+								}
+								if(fenye){
+									app.orderList = app.orderList.concat(res.data);
+								}else{
+									app.orderList = res.data;
+									setTimeout(function(){
+										if(app.orderList.length == 0){
+											$('.no_data').show();
+										}else{
+											$('.no_data').hide();
+										}
+									},0);
+									
+								}
+							}else{
+								go_alert2(res.message);
+							}
+						}
+					});
+				}
+			},
+			//改变随行人数
+			changeNum: function(itype){
+				if(itype){
+					if(app.param.sPersonNumber >= 6){
+						return;
+					}
+					app.param.sPersonNumber++
+				}else{
+					if(app.param.sPersonNumber <= 1){
+						return;
+					}
+					app.param.sPersonNumber--
+				}
+			}
+		},
+		mounted: function () {
+		    switch (switchOS()) {
+		        case 'android':
+		            WebViewJavascriptBridge.startLocation();
+		            break;
+		        case 'ios':
+		            try {
+		                webkit.messageHandlers.startLocation.postMessage("");
+		            }
+		            catch (e) { }
+		            break;
+		        case 'pc':
+		            var geolocation = new BMap.Geolocation();
+		            geolocation.getCurrentPosition(function (r) {
+		                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+		                    APPlocation(r.point.lng, r.point.lat,r.address);
+		                }
+		            })
+		    }
+		        
+			$.ajax({
+				type:"post",
+				url: host+"banner.getlist",
+				success: function(res){
+					if(res.success){
+						app.bannerList = res.data;
+						app.$nextTick(function(){
+							var mySwiper = new Swiper('.swiper-container', {
+								autoplay: 5000,//可选选项，自动滑动
+								autoplayDisableOnInteraction: false,
+								loop: true,
+								pagination : '.swiper-pagination',
+							});
+						})
+					}else{
+						go_alert2(res.message);
+					}
+				}
+			});
+			$.ajax({
+				type:"post",
+				data: {
+					iMemberID: this.userInfo.ID
+				},
+				url: host+"msg.unreadcount",
+				success: function(res){
+					if(res.success){
+						if(res.data){
+							app.isRead = true;
+						}
+					}
+					//else {
+					//	go_alert2(res.message);
+					//}
+				}
+			});
+		}
+	});
+    //获取坐标后的操作
+	function APPlocation(lng, lat, addr) {
+	    if (addr) {
+	        app.param.sCurrentLng = String(lng);
+	        app.param.sCurrentLat = String(lat);
+	        app.param.sStartAddress = addr.district + addr.street + addr.street_number;
+	        app.startAddress = addr.district + addr.street + addr.street_number;
+	        $('#city').text(addr.city);
+	        app.getList();
+	    } else {
+	        app.param.sCurrentLng = lng;
+	        app.param.sCurrentLat = lat;
+	        var mk = new BMap.Point(lng, lat);
+	        geoc.getLocation(mk, function (rs) {
+	            var addComp = rs.addressComponents;
+	            app.param.sStartAddress = addComp.district + addComp.street + addComp.streetNumber;
+	            app.startAddress = addComp.district + addComp.street + addComp.streetNumber;
+	            $('#city').text(addComp.city);
+	            app.getList();
+	        });
+	    }
+	}
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+            	app.getList(true);
+				$(".moreText").html('加载中...');
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+    });
+	
+	//起止日期设定
+	$(".date1").touchSelect({
+  		"type":"datetime",//可以设置二种选择类型：date,datetime
+        "space_minutes":0,//必须设置开始和结束时间最小间隔分钟数,最小值0
+        "limited_minutes":false,//设置限选多少分钟以内日期，为正整数
+        "date_format":"yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+        "callback":function(date_val,dom){//设置回调，默认传参为所选日期时间值
+        	console.log(date_val);
+        },
+        "hour_unit":1,//计算小时选择最小时数，默认1
+        "minute_unit":10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+        "init_date":"today"//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值今天)
+	 });
+	 //var otherData=["吃饭","睡觉","打游戏","上厕所","打豆豆","作死"],下面这种可以带id值
+	var otherData=[{id:1,name:"乘客"},{id:2,name:"车主"}]
+	$(".otherChoice").touchSelect({
+		type:"other",
+		data:otherData,
+		callback:function(json,dom){
+           if(json.id == 1){
+           	app.param.iType = 0
+           }
+           if(json.id == 2){
+           	app.param.iType = 1
+           }
+           $(".moreText").html('');
+           app.param.page = 1;
+           app.getList();
+        }
+	})
+	//打开筛选
+	function openFilter() {
+	    if (!app.isSearch) {
+	        app.param.sPersonNumber = 1;
+	        app.param.sStartAddress = app.startAddress;
+	    }
+		$('.indexFilterMask').show();
+		$('.maskRight').removeClass('toRight');
+	}
+	//关闭筛选
+	function closeFilter() {
+	    if (!app.isSearch) {
+	        app.param.sPersonNumber = '';
+	        app.param.sStartAddress = '';
+	    }
+		$('.indexFilterMask').hide();
+		$('.maskRight').addClass('toRight');
+	}
+    //判断是否微信登录
+	function isWeixin(href) {
+	    if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+	        $.ajax({
+	            type: 'post',
+	            url: host + 'member.wechatlogin',
+	            data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+	            success: function (res) {
+	                //if (res.success) {
+	                if (res.code == 403) {
+	                    go_alert2('账号审核中，请耐心等待', setTimeout(function () {
+	                        //location.href = 'login.html'
+	                        return
+	                    }, 2000))
+	                }
+	                else if (res.code == 404) {
+	                    localStorage.removeItem('userInfo');
+	                    bindPhone()
+	                }
+	                else if (res.data.bIsReviewed == 1) {
+	                    var userInfo = res.data
+	                    localStorage.userInfo = JSON.stringify(userInfo)
+	                    location.href = href
+	                }
+	                
+	            }
+	        })
+	    } else {
+	        location.href = href
+	    }
+	}
+	
+</script>
+ 
+</html>

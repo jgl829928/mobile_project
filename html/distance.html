@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>IE9+</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column bg-f7" id="app">
+			<header class="curHeader">
+				<h1>行程</h1>
+			</header>
+			<div class="journeyTab flex_dom flex_item_mid ph02 bg-fff">
+				<a @click="choiceUser(1)" :class="['flex_1', iType === 1?'active':'']" href="javascript:;">乘客</a>
+				<i class="hgt04rem border-l-eee"></i>
+				<a @click="choiceUser(0)" :class="['flex_1', iType === 0?'active':'']" href="javascript:;">车主</a>
+			</div>
+            <div>
+                <div class="pv02 text-center font0" v-show="iType === 1">
+                    <a class="releaseSchedule" @click="goAddOrder(1)" href="javascript:;">发布行程</a>
+                </div>
+                <div class="pv02 text-center font0" v-show="iType === 0">
+                    <a class="releaseSchedule" @click="goAddOrder(0)" href="javascript:;">发布行程</a>
+                </div>
+            </div>
+			<!--乘客list-->
+			<div class="flex_1 overflow_auto" id="scrollCtt" v-cloak>
+				<div class="journeyCtt" v-show="iType === 1">
+					<div class="mb02">
+						<a @click="goDetail(item.ID)" v-for="item in orderList1" class="block mb01 ph02 bg-fff" href="javascript:;">
+							<p class="flex_dom l-h-08rem">
+								<span class="flex_1 font24r">订单编号：{{item.sOrderNo}}</span>
+								
+								<span class="color-orange font22r" v-if="item.iStatus == 0">待接单</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 1">已预约</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 2">已接单</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 3">进行中</span>
+								<span class="color-000 font22r" v-if="item.iStatus == 4">已完成</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 5">已评价</span>
+								<span class="color-000 font22r" v-if="item.iStatus == 6">已取消</span>
+							</p>
+							<div class="border-t-eee pv02 font24r">
+								<p class="flex_dom flex_item_mid l-h-05rem">
+									<img class="wid026rem mr01" src="../img/slice/icon-clock.png" alt="" />
+									<span class="flex_1 only_line">{{item.sDepartureTime}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-05rem">
+									<img class="wid026rem mr01" src="../img/slice/icon-yuan.png" alt="" />
+									<span class="flex_1 only_line">{{item.sStartAddress}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-05rem" v-if="item.sPassAddress">
+									<img class="wid026rem mr01" src="../img/slice/icon-way.png" alt="" />
+									<span class="flex_1 only_line">{{item.sPassAddress}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-05rem">
+									<img class="wid026rem mr01" src="../img/slice/icon-yAddr.png" alt="" />
+									<span class="flex_1 only_line">{{item.sEndAddress}}</span>
+								</p>
+							</div>
+						</a>
+						<div v-if="orderList1.length == 0" style="top:.5rem;position:relative; height: 2.5rem;display: none;" class="no_data noData1">
+		                    <p class="color-999">暂无数据</p>
+		                </div>
+						<p v-if="orderList1.length > 0" class="color-999 font24r text-center moreText pv02" v-cloak></p>
+					</div>
+				</div>
+				<div class="journeyCtt" v-show="iType === 0">
+					<div class="mb02">
+						<a @click="goDetail(item.ID)" v-for="item in orderList2" class="block mb01 ph02 bg-fff" href="javascript:;">
+							<p class="flex_dom l-h-08rem">
+								<span class="flex_1 font24r">订单编号：{{item.sOrderNo}}</span>
+								
+								<span class="color-orange font22r" v-if="item.iStatus == 0">待预约</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 1">已预约</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 2">已接单</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 3">进行中</span>
+								<span class="color-000 font22r" v-if="item.iStatus == 4">已完成</span>
+								<span class="color-orange font22r" v-if="item.iStatus == 5">已评价</span>
+								<span class="color-000 font22r" v-if="item.iStatus == 6">已取消</span>
+							</p>
+							<div class="border-t-eee pv02 font24r">
+								<p class="flex_dom flex_item_mid l-h-05rem">
+									<img class="wid026rem mr01" src="../img/slice/icon-clock.png" alt="" />
+									<span class="flex_1 only_line">{{item.sDepartureTime}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-05rem">
+									<img class="wid026rem mr01" src="../img/slice/icon-yuan.png" alt="" />
+									<span class="flex_1 only_line">{{item.sStartAddress}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-05rem" v-if="item.sPassAddress">
+									<img class="wid026rem mr01" src="../img/slice/icon-way.png" alt="" />
+									<span class="flex_1 only_line">{{item.sPassAddress}}</span>
+								</p>
+								<p class="flex_dom flex_item_mid l-h-05rem">
+									<img class="wid026rem mr01" src="../img/slice/icon-yAddr.png" alt="" />
+									<span class="flex_1 only_line">{{item.sEndAddress}}</span>
+								</p>
+							</div>
+						</a>
+						<div v-if="orderList2.length == 0" style="top:.5rem;position:relative; height: 2.5rem;display: none;" class="no_data noData2">
+		                    <p class="color-999">暂无数据</p>
+		                </div>
+						<p v-if="orderList2.length > 0" class="color-999 font24r text-center moreText pv02" v-cloak></p>
+					</div>
+				</div>
+			</div>
+			<footer class="curFooter flex_dom">
+				<a class="flex_1" onclick="location.href='index.html'" href="javascript:;">首页</a>
+				<a class="flex_1 active" onclick="location.href='distance.html'" href="javascript:;">行程</a>
+				<a class="flex_1" onclick="location.href='community.html'" href="javascript:;">社区</a>
+				<a class="flex_1" onclick="location.href='myInfo.html'" href="javascript:;">我的</a>
+			</footer>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/vue.min.js"></script>	
+	
+
+<script>
+	console.log(1)
+	getUserInfo()
+	if(!localStorage.userInfo || localStorage.userInfo == "{}"){
+		bindPhone()
+	}
+	var app = new Vue({
+		el: '#app',
+		data: {
+			orderList1:[],
+			orderList2:[],
+			iType: 1,
+			flag: true,
+			isLoad: true,
+			page: 1,
+			page2: 1,
+			userInfo: JSON.parse(localStorage.getItem('userInfo'))
+		},
+		methods: {
+			goAddOrder: function(type){
+				localStorage.setItem('isLoadAddr',1);
+				location.href = "addOrder.html?type="+type;
+			},
+			goDetail: function(id){
+				location.href = "orderDetail.html?id="+id+'&type=2';
+			},
+			//tab切换
+			choiceUser: function(type){
+			    app.iType = type;
+			    setTimeout(function () {
+			        $(".moreText").html('');
+			    }, 0);
+			},
+			//获取列表
+			getList: function(fenye){
+			    var that = this;
+			    console.log(that.iType);
+			    console.log(that.page2);
+				if(that.flag){
+					that.flag = false;
+					$.ajax({
+						type:"post",
+						data: {
+							iMemberID: that.userInfo.ID,
+							iType: that.iType,
+							page: (that.iType ? that.page : that.page2)
+						},
+						url: host+"order.getlist",
+						success: function(res){
+							app.flag = true;
+							if(res.success){
+								if(app.iType == 1){
+									app.page = app.page + 1;
+								}else{
+									app.page2 = app.page2 + 1;
+								}
+            					
+								if(res.data.length == 0){
+									app.isLoad = false;
+								}else{
+									app.isLoad = true;
+								}
+								if(fenye){
+									if(app.iType === 1){
+										app.orderList1 = app.orderList1.concat(res.data);
+									}else{
+										app.orderList2 = app.orderList2.concat(res.data);
+									}
+								} else {
+								    app.page = app.page + 1;
+								    app.page2 = app.page2 + 1;
+									if(app.iType === 1){
+										app.orderList1 = res.data;
+										if(app.orderList1.length == 0){
+											$('.noData1').show();
+										}else{
+											$('.noData1').hide();
+										}
+									}else{
+										app.orderList2 = res.data;
+										if(app.orderList2.length == 0){
+											$('.noData2').show();
+										}else{
+											$('.noData2').hide();
+										}
+									}
+								}
+							}else{
+								go_alert2(res.message);
+							}
+						}
+					});
+				}
+			},
+			loadOwner: function(){
+				var that = this;
+				$.ajax({
+					type:"post",
+					data: {
+						iMemberID: that.userInfo.ID,
+						iType: 0,
+						page: that.page2
+					},
+					url: host+"order.getlist",
+					success: function(res){
+						if(res.success){
+							app.orderList2 = res.data;
+							if(app.orderList2.length == 0){
+								$('.noData2').show();
+							}else{
+								$('.noData2').hide();
+							}
+						}
+					}
+				});
+			}
+		},
+		mounted: function(){
+			this.getList();
+			this.loadOwner();
+		}
+	});
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        console.log(dom_height)
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+            	app.getList(true);
+				$(".moreText").html('加载中...');
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+    });
+//	$('.journeyTab a').click(function(){
+//		$(this).addClass('active').siblings().removeClass('active');
+//		var _index = $(this).index();
+//	    if(_index){
+//	    	$(".journeyCtt").eq(1).show().siblings().hide();
+//	    }else{
+//	    	$(".journeyCtt").eq(0).show().siblings().hide();
+//	    }
+//	})
+</script>
+ 
+</html>

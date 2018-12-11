@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的钱包</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+
+	</head>
+
+	<body>
+		<section id="app" class="my-wallet main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>我的钱包</h1>
+			</header>
+			<div class="flex_1 overflow_auto bg-f7" id="scrollCtt">
+
+				<!-- 余额wrap -->
+				<div class="total-info-wrap flex_dom flex_item_mid">
+					<div class="color-fff font24r flex_1 text-center">
+						<p class="m-b-15r">爱心账户</p>
+						<p>&yen;&nbsp;<span class="font38r fw_600" v-cloak>{{info.dAccountBalance}}</span></p>
+					</div>
+					<div class="color-fff font24r flex_1 text-center">
+						<p class="m-b-15r">心意礼金</p>
+						<p>&yen;&nbsp;<span class="font38r fw_600" v-cloak>{{info.dTipBalance}}</span></p>
+					</div>
+				</div>
+
+				<!-- 金额wrap -->
+				<div class="flex_dom flex_item_mid font22r total-money-wrap bg-fff">
+					<div class="flex_1 text-center">
+						<p class="m-b-10r">充值金额</p>
+						<p v-cloak>&yen;&nbsp;{{info.dTotalRechargeAmount}}</p>
+					</div>
+					<img src="../img/slice/sep.png" alt="">
+					<div class="flex_1 text-center">
+						<p class="m-b-10r">累计心意礼金提现</p>
+						<p v-cloak>&yen;&nbsp;{{info.dSumCash}}</p>
+					</div>
+					<img src="../img/slice/sep.png" alt="">
+					<div class="flex_1 text-center">
+						<p class="m-b-10r">心意礼金提现中</p>
+						<p v-cloak>&yen;&nbsp;{{info.dCashing}}</p>
+					</div>
+				</div>
+
+				<!-- 充值提现功能 -->
+				<div class="withdraw-charge m-t-10r p_both20r bg-fff">
+					<a href="withdraw.html" class="border-b-eee flex_dom flex_item_between font24r color-666 flex_item_mid">
+						<p class="flex_dom flex_item_mid l-h-09rem">
+							<img class="wid03rem" src="../img/slice/withdraw.png" alt="">
+							<span class="m-l-10r">提现</span>
+						</p>
+						<img class="wid01rem" src="../img/slice/icon-rightangle.png" alt="">
+					</a>
+					<a href="recharge.html" class="flex_dom flex_item_between font24r color-666 flex_item_mid">
+						<p class="flex_dom flex_item_mid l-h-09rem">
+							<img class="wid03rem" src="../img/slice/charge.png" alt="">
+							<span class="m-l-10r">充值</span>
+						</p>
+						<img class="wid01rem" src="../img/slice/icon-rightangle.png" alt="">
+					</a>
+				</div>
+
+				<p class="holder1">明细</p>
+
+				<!-- 明细列表 -->
+				<div class="bg-fff relative">
+					<!-- 模板 -->
+					<div v-for="item in list" class="hgt1rem font24r flex_item_center flex_dom flex_column border-b-eee m_both20r">
+						<!-- 充值和充值时间 -->
+						<p class="flex_dom flex_item_between">
+							<span class="color-ffbd43" v-cloak>{{item.sTitle}}</span>
+							<!-- <span class="color-ffbd43">打赏提现</span> -->
+							<!-- <span class="color-ffbd43">消费</span> -->
+							<span class="font22r color-999" v-text="item.dCreateTime.replace(/-/g,'.').substring(0,16)"></span>
+						</p>
+						<!-- 充值金额和余额 -->
+						<p class="flex_dom flex_item_between">
+							<span v-cloak><em v-if="item.iType == 1">+</em><em v-else>-</em>{{item.dMoney}}</span>
+							<span v-cloak>余额：{{item.dAfterMoney}}</span>
+						</p>
+					</div>
+
+                    <p class="text-center l-h-06rem moreText"></p>
+					<div class="no_data">
+						<p>暂无明细</p>
+					</div>
+				</div>
+			</div>
+
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script>
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			page: 1,
+			isLoad: true,
+			isAjaxIng: false,
+			list: [],
+			info: {}
+		},
+		methods: {
+			getData: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'member.balance',
+					data: { iMemberID: this.userInfo.ID, page: this.page },
+					success: function (res) {
+						app.checkWx(res)
+						this.isAjaxIng = false
+						app.info = res.data
+						app.list = app.list.concat(res.data.BalanceList)
+						if (res.data.BalanceList.length < 15) {
+							app.isLoad = false
+						}
+						app.isAjaxIng = true
+					}
+				})
+			},
+			checkWx: function(res){
+				if(res.message == '请先绑定微信账号'){
+					bindWx()
+				}
+			}
+		},
+		mounted: function(){
+			this.getData()
+		}
+	})
+
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+				if(app.isAjaxIng){
+					app.page = app.page + 1;
+					app.getData();
+					$(".moreText").html('加载中...');
+				}
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+	});
+	
+	function getOpenID(sOpenID, sNickname, sImageSrc){
+		app.sOpenID = sOpenID
+		app.sNickname = sNickname
+		app.sImageSrc = sImageSrc
+		
+	}
+
+</script>
+ 
+</html>

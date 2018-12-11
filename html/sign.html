@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>每日签到</title>
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<!--分享使用-->
+	<meta itemprop="name" content="" />
+	<meta itemprop="description" name="description" content="" />
+	<meta itemprop="image" content="img_url" />
+	<meta name="format-detection" content="telephone=no" />
+	<link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../css/global.css">
+	<link rel="stylesheet" type="text/css" href="../css/page.css">
+	<link rel="stylesheet" type="text/css" href="../css/calender.css">
+	<link rel="stylesheet" type="text/css" href="../css/pyf.css">
+	<link rel="stylesheet" type="text/css" href="../css/ly.css">
+	<link rel="stylesheet" type="text/css" href="../css/zyl.css">
+    <style>
+        #calendar{
+            height: auto;
+            padding-bottom: .5rem;
+        }
+        .sign_equal .sign:after{
+            height: 26px;
+            width: 26px;
+        }
+    </style>
+</head>
+
+<body>
+	<section id="app" class="sign main hgt_full flex_column">
+
+		<header class="curHeader">
+			<a class="goBack" href="javascript:;"></a>
+			<h1>每日签到</h1>
+		</header>
+
+		<div class="flex_1 overflow_auto">
+			<p class="font28r color-orange fw_600 text-center p-t-30r m-b-20r">签到!</p>
+			<p class="font24r text-center p-b-30r">可获得<span class="color-orange font26r" v-cloak>{{iIntegral}}</span>积分</p>
+			<!-- 每日签到 -->
+			<div class="back-fff m_both20r" id="calendar"></div>
+			<p class="text-center m-t-50r"><button @click="signUp" class="zyl-btn1">签到</button></p>
+		</div>
+
+		<!-- 弹出框 -->
+		<div v-if="showPopTab" class="pop-tab" v-cloak>
+			<div class="ab-wrap">
+				<img style="z-index: 100;height: .7rem;width: .6rem;height: .6rem;cursor:pointer" @click="changeShowPopTab" src="../img/slice/icon_close.png" alt="">
+				<p style="position:relative;z-index: 99" class="font30r text-center l-h-20rem font-w5" v-cloak>恭喜你！获得{{iIntegral}}个积分</p>
+			</div>
+		</div>
+
+	</section>
+
+</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>
+<script type="text/javascript" src="../lib/page.js"></script>
+<script type="text/javascript" src="../lib/calendar.js"></script>
+<script type="text/javascript" src="../lib/vue.js"></script>
+
+<script>
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			iIntegral: 0,
+			signList: [],
+			showPopTab: false
+		},
+		methods: {
+			changeShowPopTab: function(){
+				app.showPopTab = false
+			},
+			signUp: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'sign.add',
+					data: {iMemberID: app.userInfo.ID, sSignInDate: app.getToday()},
+					success: function(res){
+						if(res.success){
+							// $(".pop-tab").show()
+							app.showPopTab = true
+							app.getSign(app)
+						} else {
+							go_alert2(res.message)
+						}
+					}
+				})
+			},
+			getToday: function(){
+				var today = new Date().toJSON().split('T')[0]
+				return today
+			},
+			getSign: function (zhixiang) {
+				this.signList = []
+				$.ajax({
+					type: 'post',
+					url: host + 'sign.getlist',
+					data: { iMemberID: zhixiang.userInfo.ID },
+					success: function (res) {
+						if(res.success){
+							for (item of res.data) {
+								app.signList.push({ 'signDay': item.sSignInDate.substring(8, 10) })
+							}
+							calUtil.init(app.signList);
+						} else {
+							go_alert2(res.message)
+						}
+					}
+				})
+			},
+			// closeTab: function(){
+			// 	$(".pop-tab").hide()
+			// }
+		},
+		mounted: function(){
+			this.getToday()
+			this.getSign(this)
+			$.ajax({
+				type: 'post',
+				url: host + 'settings.get',
+				success: function(res){
+					app.iIntegral = res.data.iIntegral2
+				}
+			})
+		}
+	})
+
+	// $(function(){
+	// 	this.signList = []
+	// 	$.ajax({
+	// 		type: 'post',
+	// 		url: host + 'sign.getlist',
+	// 		data: {iMemberID: this.userInfo.ID},
+	// 		success: function(res){
+	// 			for(item of res.data){
+	// 				app.signList.push({'signDay': item.sSignInDate.substring(8,10)})
+	// 			}
+	// 			calUtil.init(signList);
+	// 		}
+	// 	})
+	// 	//ajax获取日历json数据
+	// 	// var signList=[{"signDay":"09"},{"signDay":"11"},{"signDay":"12"},{"signDay":"13"}];
+	// 	// calUtil.init(signList);
+	// });
+
+	// 打开弹出框
+	// function openTab(){
+	// 	$(".pop-tab").show()
+	// }
+	// 关闭弹出框
+	// function closeTab(){
+	// 	$(".pop-tab").hide()
+	// }
+
+</script>
+
+</html>

@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>搜索结果</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column bg-f7">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>搜索结果</h1>
+			</header>
+			<div id="scrollCtt" class="flex_1 overflow_auto">
+				<div>
+					<div v-for="item in list" class="flex_dom pa02 bg-fff mb01">
+                        <div>
+                            <div class="cur_head coverImg mb02" :style="{'backgroundImage':'url('+(item.sImageSrc?item.sImageSrc:'../img/slice/defaultHeader.png')+')'}"></div>
+                            <p class="font20r color-yellow">{{item.sOccupation}}</p>
+                        </div>
+						<div class="flex_1 ph02">
+							<div class="flex_dom">
+								<p class="hgt04rem l-h-04rem flex_1">
+									<span class="font28r only_line boxName" v-cloak>{{item.sName | filterName}}&nbsp;&nbsp;{{item.iGender==1?'先生':'女士'}}</span>
+									<button v-if="item.iMemberLevel == 1" class="p_icon1 bg-orange color-fff" v-cloak>随员</button>
+									<button v-if="item.iMemberLevel == 2" class="p_icon1 bg-orange color-fff" v-cloak>三秘</button>
+									<button v-if="item.iMemberLevel == 3" class="p_icon1 bg-orange color-fff" v-cloak>二秘</button>
+									<button v-if="item.iMemberLevel == 4" class="p_icon1 bg-orange color-fff" v-cloak>一秘</button>
+									<button v-if="item.iMemberLevel == 5" class="p_icon1 bg-orange color-fff" v-cloak>参赞-{{item.sOccupation}}</button>
+									<button v-if="item.iMemberLevel == 6" class="p_icon1 bg-orange color-fff" v-cloak>大使</button>
+								</p>
+								<a @click="addFriend(item.ID)" class="listPushBtn" href="javascript:;"><img src="../img/slice/icon-push.png"/></a>
+							</div>
+							<p class="font22r">
+								<img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+								<em v-cloak>{{item.iTotalIntegral}}</em>
+							</p>
+							<p class="font24r" v-cloak>{{item.sRegionName}}-{{item.sStreetName}}-{{item.sCommunityName}}-{{item.sVehicleColor}}{{item.sVehicleBrand}}{{item.sVehicleModel}}</p>
+							
+							<div v-if="item.sInterest" class="border-t-eee mt02 font24r color-666 p-t-15r" v-cloak>
+								爱好：{{item.sInterest}}
+							</div>
+							<div v-else class="border-t-eee mt02 font24r color-666 p-t-15r" v-cloak>
+								无
+							</div>
+						</div>
+					</div>
+					<div class="no_data">
+						<p>暂无匹配用户</p>
+					</div>
+				</div>
+				<p class="text-center l-h-06rem moreText"></p>
+			</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script>
+
+	var app = new Vue({
+		el: '#app',
+		data: {
+			submitData: JSON.parse(localStorage.searchFriend),
+			isLoad: true,
+			isAjaxIng: false,
+			list: [],
+			userInfo: JSON.parse(localStorage.userInfo)
+		},
+		filters: {
+		    filterName: function (value) {
+		        if (!value) return;
+		        var str = '';
+		        for (var i = 0; i < value.length - 1; i++) {
+		            str += '*';
+		        }
+		        console.log(str.substring(0, 1) + str);
+		        return value.substring(0, 1) + str;
+		    }
+		},
+		methods: {
+			getList: function(){
+				this.submitData.page = 1
+				this.isAjaxIng = false
+				$.ajax({
+					type: 'post',
+					url: host + 'member.search',
+					data: this.submitData,
+					success: function(res){
+						app.list = app.list.concat(res.data)
+						if (res.data.length < 15) {
+							app.isLoad = false
+						}
+						app.isAjaxIng = true
+					}
+				})
+			},
+			addFriend: function(id){
+				$.ajax({
+					type: 'post',
+					url: host + 'friend.add',
+					data: {
+						iMemberID: app.userInfo.ID,
+						iRelMemberID: id
+					},
+					success: function(res){
+						if(res.success){
+							go_alert2(res.message)
+						} else {
+							go_alert2(res.message)
+						}
+					}
+				})
+			}
+		},
+		mounted: function(){
+			this.getList()
+		}
+	})
+
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+		console.log(1)
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+				if(app.isAjaxIng){
+					app.page = app.page + 1;
+					app.getList();
+					$(".moreText").html('加载中...');
+				}
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+    });
+
+</script>
+ 
+</html>

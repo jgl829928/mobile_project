@@ -1,0 +1,497 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section class="main hgt_full flex_column" id="app">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>发布行程</h1>
+			</header>
+			<section class="flex_1 overflow_auto font24r relative">
+				<div class="Con bg-fff">
+					<div class="mapArea relative">
+						<div id="bMap" style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;"></div>
+						<div class="clocationArea l-pad20">
+							<div class="hgt09rem border-b-eee between-center">
+								<span class="color-666">出发地：</span>
+								<div class="center-end flex_1">
+									<input @click="goChoiceAddr(1)" v-model="param.sStartAddress" type="text" class="text-right flex_1 mr01 pv02" onclick="$(this).blur();" placeholder="选择出发地" value="" />
+									<img v-if="param.iType == 0" @click="passFlag = true" class="wid04rem" src="../img/slice/icon-jia.png"/>
+								</div>
+							</div>
+							<div class="hgt09rem border-b-eee between-center" v-if="passFlag">
+								<span class="color-666">途经地：</span>
+								<div class="center-end flex_1">
+									<input @click="goChoiceAddr(2)" v-model="param.sPassAddress" type="text" class="text-right flex_1 mr01 pv02" onclick="$(this).blur();" placeholder="途径地哪儿" value="" />
+									<img @click="deletePass()" class="wid04rem" src="../img/slice/icon-jian.png"/>
+								</div>
+							</div>
+							<div class="hgt09rem border-b-eee between-center">
+								<span class="color-666">目的地：</span>
+								<div class="center-end flex_1">
+									<input @click="goChoiceAddr(3)" v-model="param.sEndAddress" type="text" class="text-right iconRight flex_1 pv02" onclick="$(this).blur();" placeholder="你要去哪儿" value="" />
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="fbxcBot l-pad20 Con">
+						<div class="hgt14rem around-center border-b-eee">
+							<div class="flex_1 hgt1rem column-center-b">
+								<img @click="setEndAddr(1)" class="wid05rem" src="../img/slice/icon_home.png"/>
+								<p class="center" @click="goUsualAddr()">
+									<span style="max-width: 2.3rem" class="only_line">{{homeAddr.iType ? homeAddr.sAddress : '设置家的位置'}}</span>
+									<img class="wid02rem m-l-10r" src="../img/slice/icon_text.png"/>
+								</p>
+							</div>
+							<div class="grayline"></div>
+							<div class="flex_1 hgt1rem column-center-b">
+								<img @click="setEndAddr(2)" class="wid05rem" src="../img/slice/icon_firm.png"/>
+								<p class="center" @click="goUsualAddr()">
+									<span style="max-width: 2.3rem" class="only_line">{{companyAddr.iType ? companyAddr.sAddress : '设置单位地址'}}</span>
+									<img class="wid02rem m-l-10r" src="../img/slice/icon_text.png"/>
+								</p>
+							</div>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">出发时间：</span>
+							<div class="center-end flex_1">
+								<input type="text" name="sDepartureTime" v-model="param.sDepartureTime"  readonly="readonly" placeholder="请选择" date-choice class="iconRight  date font24r text-right wid100" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">随行：</span>
+							<div class="center-end wid47rem">
+								<input type="text" name="personNumber"  readonly="readonly" placeholder="请选择" class="iconRight  otherChoice  font24r text-right flex_1" value="" />
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">距离：</span>
+							<div class="text-right only_line wid47rem">
+								{{juli}}
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">姓名：</span>
+							<div class="text-right only_line wid47rem">
+								{{userInfo.sName}}
+							</div>
+						</div> 
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">手机号：</span>
+							<div class="text-right only_line wid47rem">
+								{{userInfo.sPhone}}
+							</div>
+						</div> 
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666">备注：</p>
+							<textarea class="regTxt" name="sPassengerDesc" v-model="param.sPassengerDesc" placeholder="请填写备注" rows="" cols=""></textarea>
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="bg-ffa127 font24r color-fff around-center hgt08rem" @click="submitOrder()">
+				确认发布
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B"></script>
+
+
+<script type="text/javascript">
+    getUserInfo();
+    var map = new BMap.Map("bMap");
+    var geoc = new BMap.Geocoder();
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.getItem('userInfo')),
+			passFlag: false,
+			param:{
+				iMemberID: '',
+				iType: 1,
+				sStartAddress: '',
+				sStartLongitude: '',
+				sStartLatitude: '',
+				sPassAddress: '',
+				sPassLongitude: '',
+				sPassLatitude: '',
+				sEndAddress: '',
+				sEndLongitude: '',
+				sEndLatitude: '',
+				sDepartureTime: '',
+				sDriverDesc: '',
+				sPassengerDesc: '',
+				iPersonNumber: 0,
+				iSeatNumber: 0,
+			    sDriverDesc: ''
+			},
+			juli: '',
+			homeAddr: {},
+			companyAddr: {}
+		},
+		watch: {
+			'param.sEndAddress': function(){
+				if(this.passFlag){
+				    if (this.param.sStartAddress && this.param.sPassAddress && this.param.sEndAddress && (!this.param.sDepartureTime)) {
+						$('[name=sDepartureTime]')[0].click();
+					}
+				}else{
+				    if (this.param.sStartAddress && this.param.sEndAddress && (!this.param.sDepartureTime)) {
+						$('[name=sDepartureTime]')[0].click();
+					}
+				}
+				loadMap();
+			}
+		},
+		methods: {
+		    //删除途经地
+		    deletePass: function(){
+		        app.passFlag = false;
+		        if (app.param.sPassAddress) {
+		            localStorage.removeItem('passAddr');
+		            app.param.sPassAddress = '';
+		            app.param.sPassLongitude = '';
+		            app.param.sPassLatitude = '';
+		        }
+		    },
+			//使用常用地址
+			setEndAddr: function(type){
+				if(type === 1){
+					if(!app.homeAddr.iType)return;
+					app.param.sEndAddress = app.homeAddr.sProvince+app.homeAddr.sCity+app.homeAddr.sRegion+app.homeAddr.sAddress;
+					app.param.sEndLongitude = app.homeAddr.sLongitude;
+					app.param.sEndLatitude = app.homeAddr.sLatitude;
+				}else if(type == 2){
+					if(!app.companyAddr.iType)return;
+					app.param.sEndAddress = app.companyAddr.sProvince+app.companyAddr.sCity+app.companyAddr.sRegion+app.companyAddr.sAddress;
+					app.param.sEndLongitude = app.companyAddr.sLongitude;
+					app.param.sEndLatitude = app.companyAddr.sLatitude;
+				}
+				var end = {};
+				end.name = app.param.sEndAddress;
+				end.lng = app.param.sEndLongitude;
+				end.lat = app.param.sEndLatitude;
+				console.log(app.param.sEndLatitude);
+				localStorage.setItem('endAddr', JSON.stringify(end));
+				setTimeout(function () {
+				    loadMap();
+				})
+				
+			},
+			//跳转常用地址
+			goUsualAddr: function(){
+				location.href = 'usualAddr.html';
+			},
+			//跳转选择地址
+			goChoiceAddr: function(type){
+				localStorage.setItem('isLoadAddr',1);
+				location.href = 'chioceAddr.html?type='+type;
+			},
+			//提交订单
+			submitOrder: function(){
+				if(!app.param.sStartAddress){
+					go_alert2('请选择出发地');
+					return false;
+				}
+//				if(!app.userType && app.passFlag && !app.param.sPassAddress){
+//					
+//				}
+				if(!app.param.sEndAddress){
+					go_alert2('请选择目的地');
+					return false;
+				}
+				if(!app.param.sDepartureTime){
+					go_alert2('请选择出发时间');
+					return false;
+				}
+				console.log(app.param.iPersonNumber);
+				if(!$('[name=personNumber]').val()){
+					go_alert2('请选择随行人数');
+					return false;
+				}
+				if (app.param.iType == 0) {
+				    app.param.sDriverDesc = app.param.sPassengerDesc
+				    app.param.sPassengerDesc = ''
+                }
+				$.ajax({
+					type:"post",
+					url: host+"order.add",
+					data: app.param,
+					success: function(res){
+						go_alert2(res.message);
+						if(res.success){
+							setTimeout(function(){
+								goBack();
+							},2000);
+						}
+					}
+				});
+			}
+		},
+		mounted: function () {
+		    $.ajax({
+		        type: "post",
+		        data: {
+		            iMemberID: JSON.parse(localStorage.getItem('userInfo')).ID
+		        },
+		        url: host + "addr.gethaclist",
+		        success: function (res) {
+		            if (res.success) {
+		                if (!res.data) return;
+		                for (var i = 0; i < res.data.length; i++) {
+		                    var addr = res.data[i];
+		                    if (addr.iType === 1) {
+		                        app.homeAddr = addr;
+		                    }
+		                    if (addr.iType == 2) {
+		                        app.companyAddr = addr;
+		                    }
+		                }
+		            } else {
+		                go_alert2(res.message);
+		            }
+		        }
+		    });
+			var urlParam = GetRequest();
+			this.userType = urlParam.type;
+			this.param.iMemberID = this.userInfo.ID;
+			this.param.iType = urlParam.type;
+			var startAddr = JSON.parse(localStorage.getItem('startAddr'));
+			var passAddr = JSON.parse(localStorage.getItem('passAddr'));
+			var endAddr = JSON.parse(localStorage.getItem('endAddr'));
+			var sDepartureTime = JSON.parse(localStorage.getItem('sDepartureTime'));
+			if(localStorage.getItem('isLoadAddr') == 1){
+				localStorage.removeItem('startAddr');
+				localStorage.removeItem('passAddr');
+				localStorage.removeItem('endAddr');
+				localStorage.removeItem('sDepartureTime');
+				switch (switchOS()) {
+				    case 'android':
+				        WebViewJavascriptBridge.startLocation();
+				        break;
+				    case 'ios':
+				        try {
+				            webkit.messageHandlers.startLocation.postMessage("");
+				        }
+				        catch (e) { }
+				        break;
+				    case 'pc':
+				        var geolocation = new BMap.Geolocation();
+				        geolocation.getCurrentPosition(function (r) {
+				            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+				                APPlocation(r.point.lng, r.point.lat, r);
+				            }
+				        })
+				}
+				return;
+			}
+			if(startAddr){
+				this.param.sStartAddress = startAddr.name;
+				this.param.sStartLongitude = startAddr.lng;
+				this.param.sStartLatitude = startAddr.lat;
+			}
+			if (passAddr) {
+			    this.passFlag = true;
+				this.param.sPassAddress = passAddr.name;
+				this.param.sPassLongitude = passAddr.lng;
+				this.param.sPassLatitude = passAddr.lat;
+			}
+			if(endAddr){
+				this.param.sEndAddress = endAddr.name;
+				this.param.sEndLongitude = endAddr.lng;
+				this.param.sEndLatitude = endAddr.lat;
+			}
+			if (sDepartureTime) {
+			    this.param.sDepartureTime = sDepartureTime;
+			}
+			setTimeout(function(){
+				loadMap();
+			},0);
+			
+		}
+	});
+    //
+	function APPlocation(lng, lat, r) {
+	    if(r){
+	        var addr = r.address.province + r.address.city + r.address.district + r.address.street + r.address.street_number;
+	        app.param.sStartAddress = addr;
+	        app.param.sStartLongitude = r.point.lng;
+	        app.param.sStartLatitude = r.point.lat;
+	        var start = {};
+	        start.name = addr;
+	        start.lng = r.point.lng;
+	        start.lat = r.point.lat;
+	        localStorage.setItem('startAddr', JSON.stringify(start));
+	        loadMap();
+	    } else {
+	        app.param.sStartLongitude = lng;
+	        app.param.sStartLatitude = lat;
+	        var mk = new BMap.Point(lng, lat);
+	        geoc.getLocation(mk, function (rs) {
+	            var addComp = rs.addressComponents;
+	            var addr = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber;
+	            app.param.sStartAddress = addr;
+	            var start = {};
+	            start.name = addr;
+	            start.lng = lng;
+	            start.lat = lat;
+	            localStorage.setItem('startAddr', JSON.stringify(start));
+	            loadMap();
+	        });
+	    }
+	}
+	//单独的日期选择
+	var today = new Date();
+	var newDate = new Date(today.getTime()+1000*60*60*0.25);
+	var initDate = newDate.getFullYear()+'-'+(newDate.getMonth()+1)+'-'+newDate.getDate()+'-'+newDate.getHours()+'-'+newDate.getMinutes();
+	$(".date").touchSelect({
+  		"type":"datetime",//可以设置二种选择类型：date,datetime
+        "limited_minutes":200*365*24*60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+        "date_format":"yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+        "callback":function(date_val){//设置回调，默认传参为所选日期时间值
+            console.log(date_val);
+            localStorage.setItem('sDepartureTime', JSON.stringify(date_val));
+        },
+        "hour_unit":1,//计算小时选择最小时数，默认1
+        "minute_unit":10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+        "init_date":{"defaultDate":initDate,"startDate":true},//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+	});
+	var otherData=[{id:1,name:"1人"},{id:2,name:"2人"},{id:3,name:"3人"},{id:4,name:"4人"},{id:5,name:"5人"},{id:6,name:"6人"}]
+	$(".otherChoice").touchSelect({
+		type:"other",
+		data:otherData,
+		callback:function(val,dom){
+			if(app.userType == 0){
+				app.param.iSeatNumber = val.id;
+			}else{
+				app.param.iPersonNumber = val.id;
+			}
+        }
+	})
+	//地图渲染
+function loadMap(){
+	//2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B
+	
+	var map = new BMap.Map("bMap");
+	//多点定位视图自适应
+	var points = [];
+	
+	
+	//地图显示多点自适应
+	if(app.param.sStartLatitude){
+		points.push({"lat":app.param.sStartLatitude,"lng":app.param.sStartLongitude});
+	}
+	if(app.param.sPassAddress){
+		points.push({"lat":app.param.sPassLatitude,"lng":app.param.sPassLongitude});
+	}
+	if(app.param.sEndLatitude){
+		points.push({"lat":app.param.sEndLatitude,"lng":app.param.sEndLongitude});
+	}
+	
+	//points = points.concat([{"lat":30.68994285,"lng":104.06792346},{"lat":30.67994285,"lng":104.16792346},{"lat":30.57994285,"lng":104.26792346}]);
+
+	var view = map.getViewport(points);
+	var mapZoom = view.zoom;
+	var centerPoint = view.center;
+	map.centerAndZoom(centerPoint, mapZoom);
+	map.enableScrollWheelZoom(true);
+    //计算出发地到目的地的距离
+	if (app.param.sEndLatitude) {
+	    var p1 = new BMap.Point(app.param.sStartLongitude, app.param.sStartLatitude);
+	    var p2 = new BMap.Point(app.param.sEndLongitude, app.param.sEndLatitude);
+	    var driving = new BMap.DrivingRoute(map, {
+	        onSearchComplete: function (results) {
+	            if (driving.getStatus() != BMAP_STATUS_SUCCESS) {
+	                return;
+	            }
+	            var plan = results.getPlan(0);
+	            console.log(plan.getDistance(true));
+	            app.juli = plan.getDistance(true);
+	            //创建信息窗口
+	            //				var geoc = new BMap.Geocoder();  
+	            //				var opts = {
+	            //						width : 200,     // 信息窗口宽度
+	            //						height: 50,     // 信息窗口高度
+	            //						enableMessage:true//设置允许信息窗发送短息
+	            //			   		};
+	            //				geoc.getLocation(p2, function(rs){
+	            //					var addComp = rs.addressComponents;
+	            //					console.log(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+	            //					var content = "距离你："+plan.getDistance(true)+" <br/>我在："+app.info.sStartAddress;
+	            //					var infoWindow = new BMap.InfoWindow("<b class='iw_poi_title'>距离：" + plan.getDistance(true) + "</b>",opts);  // 创建信息窗口对象
+	            //					map.openInfoWindow(infoWindow,p2); //开启信息窗口
+	            //					setTimeout(function(){
+	            //						$('.BMap_bubble_title').parent().addClass('map-content');
+	            //					},0)
+	            //					
+	            //					marker2.addEventListener("click",function(e){
+	            //						map.openInfoWindow(infoWindow,p2); //开启信息窗口
+	            //						setTimeout(function(){
+	            //							$('.BMap_bubble_title').parent().addClass('map-content');
+	            //						},0)
+	            //					}); 
+	            //				});
+	        }
+	    });
+	    driving.search(p1, p2);
+	}
+	
+	//多点渲染
+	//起点
+	if(app.param.sStartLongitude){
+		var pt = new BMap.Point(app.param.sStartLongitude, app.param.sStartLatitude);
+		var myIcon = new BMap.Icon("../img/slice/icon-yAddr.png", new BMap.Size(23,26));
+		var marker2 = new BMap.Marker(pt,{icon:myIcon});  // 创建标注
+		map.addOverlay(marker2);              // 将标注添加到地图中
+	}
+	
+	//途经点
+	if(app.param.sPassAddress){
+		var pt2 = new BMap.Point(app.param.sPassLongitude, app.param.sPassLatitude);
+		var myIcon2 = new BMap.Icon("../img/slice/icon-way.png", new BMap.Size(23,26));
+		var marker3 = new BMap.Marker(pt2,{icon:myIcon2});  // 创建标注
+		map.addOverlay(marker3);    
+	}
+	
+	//终点
+	if(app.param.sEndLongitude){
+		var pt3 = new BMap.Point(app.param.sEndLongitude, app.param.sEndLatitude);
+		var myIcon3 = new BMap.Icon("../img/slice/map-end.png", new BMap.Size(23,26));
+		var marker4 = new BMap.Marker(pt3,{icon:myIcon3});  // 创建标注
+		map.addOverlay(marker4);
+	}	
+}
+function countJuli() {
+    
+}
+</script>
+ 
+</html>

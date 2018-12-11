@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column bg-f7">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>我的</h1>
+			</header>
+			<div class="flex_1 bg-f7 overflow_auto">
+				<div class="Con bg-fff l-pad20">
+					<div onclick="location.href = 'editMyInfo.html'" class="flex_dom pv02 border-b-eee">
+						<div class="cur_head_person coverImg" :style="{'backgroundImage': 'url(' + (myInfo.sImageSrc?myInfo.sImageSrc:'../img/slice/defaultHeader.png') + ')'}"></div>
+						<div class="flex_1 ph02 iconRightY">
+							<div class="hgt04rem l-h-04rem flex_dom flex_item_mid">
+								<div class="flex_1">
+									<span class="font28r only_line boxName" v-if="myInfo.sName" v-cloak>{{myInfo.sName | filterName}}{{myInfo.iGender == 1 ? '先生' : '女士'}}</span>
+                                    <span class="font28r only_line boxName" v-else v-cloak>{{myInfo.sNickname}}</span>
+									<button style="vertical-align: inherit" v-if="myInfo && myInfo.iMemberLevel == 1" class="p_icon1 bg-orange color-fff" v-cloak>随员</button>
+									<button style="vertical-align: inherit" v-if="myInfo && myInfo.iMemberLevel == 2" class="p_icon1 bg-orange color-fff" v-cloak>三秘</button>
+									<button style="vertical-align: inherit" v-if="myInfo && myInfo.iMemberLevel == 3" class="p_icon1 bg-orange color-fff" v-cloak>二秘</button>
+									<button style="vertical-align: inherit" v-if="myInfo && myInfo.iMemberLevel == 4" class="p_icon1 bg-orange color-fff" v-cloak>一秘</button>
+									<button style="vertical-align: inherit" v-if="myInfo && myInfo.iMemberLevel == 5" class="p_icon1 bg-orange color-fff" v-cloak>参赞-{{myInfo.sOccupation}}</button>
+									<button style="vertical-align: inherit" v-if="myInfo && myInfo.iMemberLevel == 6" class="p_icon1 bg-orange color-fff" v-cloak>大使</button>
+								</div>
+							</div>
+							<div class="font22r flex_dom">
+								<div class="flex_1">
+									<img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+									<em v-if="myInfo" v-cloak>{{myInfo.iTotalIntegral}}</em>
+								</div>
+							</div>
+							<div class="font22r flex_dom">
+								<div v-if="myInfo" class="flex_1" v-cloak>
+									{{myInfo.sRegionName}}-{{myInfo.sStreetName}}-{{myInfo.sVehicleColor}}{{myInfo.sVehicleBrand}}{{myInfo.sVehicleModel}}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="wid100 pv03">
+						<p class="text-center">完成订单数</p>
+						<div class="between-center mt02 hgt1rem">
+							<div class="hgt1rem wid50 column-center-b">
+								<span v-if="myInfo" class="color-ffa127 lh1 font60r" v-cloak>{{myInfo.iTakeTimes}}</span>
+								<p class="color-999">享受服务次数</p>
+							</div>
+							<div class="grayline"></div>
+							<div class="hgt1rem wid50 column-center-b">
+								<span v-if="myInfo" class="color-ffa127 lh1 font60r" v-cloak>{{myInfo.iServiceTimes}}</span>
+								<p class="color-999">服务他人次数</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="Con mt01 bg-fff l-pad20">
+					<a href="myWallet.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_1.png"/>
+							<span class="color-666 ml01">我的钱包</span>
+						</div>
+						<span v-if="myInfo" class="iconRight wid50 only_line text-right" v-cloak>{{myInfo.dAccountBalance}}</span>
+					</a>
+					<a href="changeEmPhone.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_2.png"/>
+							<span class="color-666 ml01">紧急联系人电话</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right" v-if="myInfo.sEmergencyContactPhone" v-text="tPhone(myInfo.sEmergencyContactPhone)"></span>
+						<span class="iconRight wid50 only_line text-right" v-else>设置</span>
+					</a>
+					<a :href="myInfo.iMainID != 0 ? ('driverReview.html?' + myInfo.iMainID) : 'driverReview.html?' + myInfo.ID" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_3.png"/>
+							<span class="color-666 ml01">车主认证</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right" v-if=" myInfo.bIsReviewed == 1">已认证</span>
+						<span class="iconRight wid50 only_line text-right" v-if="myInfo.bIsReviewed == 0">未认证</span>
+					</a>
+					<a href="myMember.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_4.png"/>
+							<span class="color-666 ml01">家庭成员</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right" v-if="myInfo.FamilyList && myInfo.FamilyList.length == 1" v-cloak>{{myInfo.FamilyList[0].sName}}</span>
+						<span class="iconRight wid50 only_line text-right" v-else></span>
+					</a>
+					<a href="myScore.html" class="hgt09rem between-center">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_4.png"/>
+							<span class="color-666 ml01">我的积分</span>
+						</div>
+						<span v-if="myInfo" class="iconRight wid50 only_line text-right" v-cloak>{{myInfo.iSurplusIntegral}}</span>
+					</a>
+				</div>
+				<div class="Con mt01 bg-fff l-pad20">
+					<a href="changePwd.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_6.png"/>
+							<span class="color-666 ml01">修改密码</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="myAddr.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_7.png"/>
+							<span class="color-666 ml01">我的地址</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="myFriend.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_9.png"/>
+							<span class="color-666 ml01">我的好友</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="myReward.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_10.png"/>
+							<span class="color-666 ml01">我的奖励</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="myComment.html" class="hgt09rem between-center">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_11.png"/>
+							<span class="color-666 ml01">我的评分</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+				</div>
+				<div class="Con mt01 bg-fff l-pad20">
+					<a href="kpInfo.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_12.png"/>
+							<span class="color-666 ml01">开票信息</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="myPolicy.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/pp.png"/>
+							<span class="color-666 ml01">我的保单</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="aboutUs.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_14.png"/>
+							<span class="color-666 ml01">关于我们</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="helpCenter.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/ppp.png"/>
+							<span class="color-666 ml01">帮助中心</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a @click="openContactUs" href="javascript:void(0)" class="hgt09rem between-center">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_2.png"/>
+							<span class="color-666 ml01">联系我们</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+				</div>
+				<div class="Con mt01 bg-fff l-pad20">
+					<a href="mail.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_16.png"/>
+							<span class="color-666 ml01">站内信</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="usualAddr.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_7.png"/>
+							<span class="color-666 ml01">我的常用地理位置</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="coupon.html" class="hgt09rem between-center border-b-eee">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_17.png"/>
+							<span class="color-666 ml01">我的优惠券</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+					<a href="leavingMessage.html" class="hgt09rem between-center">
+						<div class="center wid50">
+							<img class="wid026rem" src="../img/slice/p_18.png"/>
+							<span class="color-666 ml01">留言</span>
+						</div>
+						<span class="iconRight wid50 only_line text-right"></span>
+					</a>
+				</div>
+				<div class="wid100 around-center hgt14rem">
+					<button @click="loginOut" class="keepBtn font24r">退出登录</button>
+				</div>
+			</div>
+			<footer class="curFooter flex_dom">
+				<a class="flex_1" href="index.html">首页</a>
+				<a class="flex_1" href="distance.html">行程</a>
+				<a class="flex_1" href="community.html">社区</a>
+				<a class="flex_1 active" href="javascript:;">我的</a>
+			</footer>
+			<!--联系客服-->
+			<div id="contactUs" style="z-index: 1;display: none" class="markBox2 font24r">
+	            <div style="width: 4.7rem;" class="mark overflow_hide">
+	            	<div class="Con text-center color-333 border-b-eee p-a-50r bg-fff" v-cloak>
+						{{setting.sPhone}}
+	            	</div>
+	            	<div class="hgt08rem bg-fff around-center ">
+	            		<button onclick="$('.markBox2').hide()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+	            		<a :href="'tel:' + setting.sPhone" class="wid50 color-fff hgt08rem color-000 font24r around-center">拨号</a>
+	            	</div>
+	            </div>
+	      	</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script type="text/javascript" src="../lib/touchSelect.js"></script>	
+<script type="text/javascript">
+
+    getUserInfo()
+
+    setTimeout(function () {
+        if (!localStorage.userInfo || localStorage.userInfo == "{}") {
+            bindPhone()
+        }
+    }, 0)
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            userInfo: JSON.parse(localStorage.userInfo),
+            myInfo: {},
+            setting: {}
+        },
+        filters: {
+            filterName: function (value) {
+                if (!value) return;
+                var str = '';
+                for (var i = 0; i < value.length - 1; i++) {
+                    str += '*';
+                }
+                return value.substring(0, 1) + str;
+            }
+        },
+        methods: {
+            tPhone: function (phone) {
+                return phone.substring(0, 3) + "****" + phone.substring(8, 11)
+            },
+            getMemberInfo: function () {
+                $.ajax({
+                    type: 'post',
+                    url: host + 'member.get',
+                    data: { iMemberID: this.userInfo.ID },
+                    success: function (res) {
+                        app.myInfo = res.data
+                    }
+                })
+            },
+            getSetting: function () {
+                $.ajax({
+                    type: 'post',
+                    url: host + 'settings.get',
+                    success: function (res) {
+                        app.setting = res.data
+                    }
+                })
+            },
+            openContactUs: function () {
+                $('#contactUs').show()
+            },
+            loginOut: function () {
+                // localStorage.userInfo = JSON.stringify({})
+                localStorage.removeItem('userInfo')
+                localStorage.removeItem('wxInfo')
+                go_alert2('退出登录成功，即将跳转到登录界面', function () {
+                    location.href = 'login.html'
+                })
+            }
+        },
+        mounted: function () {
+            this.getMemberInfo()
+            this.getSetting()
+        }
+    })
+
+
+
+</script>
+ 
+</html>

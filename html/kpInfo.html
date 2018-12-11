@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>开票信息</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css">
+		
+		<style>
+		
+			.kp-info .confirm_box input {
+				border: none;
+				outline: none;
+				border-radius: .05rem;
+				background: #f7f7f7 url(../img/slice/icon_bot.png) no-repeat center right .2rem;
+				background-size: .1rem .06rem;
+			}
+		</style>
+	</head>
+	<body>
+		<section id="app" class="kp-info main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<a id="kp-pic" href="kpHistory.html"></a>
+				<h1>开票信息</h1>
+			</header>
+			<div id="scrollCtt" class="flex_1 overflow_auto">
+				<p class="serach hgt09rem flex_dom flex_item_mid p_both20r bg-fff font24r">
+					<span>时间：</span>
+					<input date-choice readonly="readonly" v-model="sStartTime" class="date1 font24r placeholderccc wid21rem text-center" type="text">
+					<span class="line m-r-20r"></span>
+					<input date-choice readonly="readonly" v-model="sEndTime" class="date2 font24r placeholderccc wid21rem text-center" type="text">
+				</p>
+				<p @click="search" class="l-h-09rem text-center bg-f7"><button class="zyl-btn1 hgt05rem l-h-05rem wid11rem">查询</button></p>
+				<!-- 列表 -->
+				<div class="list p_both20r relative">
+					<!-- 模板 -->
+					<div v-if="list" v-for="(item, index) in list">
+						<input :id="'rId'+item.ID" type="checkbox" class="dPayValueInput" hidden :value="item.dPayValue">
+						<label class="mod-wrap hgt12rem border-b-eee relative wid100 p-l-40r flex_dom flex_item_center flex_column" :for="'rId'+item.ID">
+							<p class="flex_dom flex_item_between">
+								<span class="font24r">消费</span>
+								<span class="font30r" v-cloak>-{{item.dPayValue}}</span>
+							</p>
+							<p class="font20r color-999" v-cloak v-text="'日期：' + item.dCreateTime.replace(/-/g,'.').substring(0,16)"></p>
+						</label>
+					</div>
+					<div class="no_data">
+						<p>暂无可开票信息</p>
+					</div>
+				</div>
+			</div>
+			<button onclick="openTab()" class="zyl-btn2">申请开票</button>
+			<!-- 弹窗 -->
+			<div class="confirm_box font22r" style="position:fixed;z-index:1500;width:100%;opacity:1;height:100%;left:0;top:0px;background-color:rgba(68,68,68,0.4);">
+				<div class="content" style="width:260px;text-align:center;position:absolute;overflow: hidden;font-size:14px;left:50%;top:50%; transform:translateY(-50%) translateX(-50%);-webkit-transform:translateY(-50%) translateX(-50%);background-color:#fff;border-radius:5px">
+					<div style="padding:30px 20px; line-height:25px; border-bottom:1px solid #ccc;color:#999;font-size:14px">
+						<div class="m-b-10r">
+							<p class="flex_dom flex_item_mid">
+								<span class="color-000">充值说明</span>
+								<!-- <select class="pad10r flex_1 m-l-10r"> -->
+									<!-- <option value="" v-cloak v-for="(item, index) in memberList">{{item.sName}}</option> -->
+									<input v-model="kpPerson" readonly class="otherChoice1 pad10r flex_1 m-l-10r" type="text">
+								<!-- </select> -->
+							</p>
+						</div>
+						<div>
+							<p class="text-left" style="color:#000">开票金额：&nbsp;<span class="color-ffa127">&yen;&nbsp;</span><span class="color-ffa127 yen"></span></p>
+						</div>
+					</div>
+					<div>
+						<button onclick="cancel()" style="cursor:pointer;padding:10px 0px; background-color:#fff;border:0;display:inline_block;width:48%;;color:#999;font-size:14px;outline:none; vertical-align:middle;color:#999">取消</button>
+						<button onclick="comfirm()" style="cursor:pointer;padding:10px 0px; background-color:#fff;border:0;display:inline_block;width:48%;color:#000;font-size:14px;outline:none;border-left:1px solid #ccc;vertical-align:middle;color:#000">确定</button>
+						<div></div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</body>
+    <script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+    <script type="text/javascript" src="../lib/uploadPreview.js"></script>
+    <script type="text/javascript" src="../lib/form-check.js"></script>
+    <script type="text/javascript" src="../lib/swiper.min.js"></script>
+    <script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+    <script type="text/javascript" src="../lib/page.js"></script>	
+	<script type="text/javascript" src="../lib/vue.js"></script>
+	<script src="../lib/touchSelect.js"></script>	
+    <script>
+	    getUserInfo()
+	    var app = new Vue({
+		    el: '#app',	
+		    data: {
+			    userInfo: JSON.parse(localStorage.userInfo),
+			    page: 1,
+			    sStartTime: new Date(new Date().valueOf() - 365*24*60*1000*60).toJSON().split(/T/)[0],
+	            sEndTime: new Date().toJSON().split(/T/)[0],
+			    list: [],
+                memberList: [],
+				kpPerson: '',
+				memberArr: [],
+				sum: 0,
+			    isLoad: true,
+			    isAjaxIng: false,
+			    defalutTime: {
+				    sStartTime: new Date(new Date().valueOf() - 365*24*60*1000*60).toJSON().split(/T/)[0],
+				    sEndTime: new Date().toJSON().split(/T/)[0],
+			    }
+		    },
+		    methods: {
+			    getList: function(){
+				    this.isAjaxIng = false
+				    $.ajax({
+					    type: 'post',
+					    url: host + 'order.getfinishlist',
+					    data: {
+						    iMemberID: this.userInfo.ID,
+						    page: this.page,
+						    sStartTime: this.sStartTime || this.defalutTime.sStartTime,
+						    sEndTime: this.sEndTime || this.defalutTime.sEndTime
+					    },
+					    success: function (res) {
+						    if (res.success) {
+
+						    } else {
+							    go_alert2(res.message)
+						    }
+						    app.list = app.list.concat(res.data)
+						    if (res.data.length < 15) {
+							    app.isLoad = false
+						    }
+						    app.isAjaxIng = true
+
+					    }
+				    })
+			    },
+			    getMemberList: function () {
+					this.isAjaxIng = false
+					$.ajax({
+						type: 'post',
+						url: host + 'member.getlistbyid',
+						data: {
+							iMemberID: this.userInfo.ID
+						},
+						success: function (res) {
+							if (res.success) {
+								//
+							} else {
+								go_alert2(res.message)
+							}
+							app.memberList = res.data;
+							for (item of res.data) {
+								app.memberArr.push(item.sName)
+							}
+							app.kpPerson = app.memberArr[0]
+							$(".otherChoice1").touchSelect({
+								type: "other",//设置是否是联动模式
+								data: app.memberArr,
+								callback: function (val, dom) {//回调，传入参数为省市区id字符串,和省市名称字符串
+									app.kpPerson = val.name
+								}
+							})
+							app.isAjaxIng = true
+						}
+					})
+				},
+				addSum: function(){
+					app.sum = 0
+					var sum = 0
+					var arr = $('.dPayValueInput')
+					for(idx in arr){
+						if(arr[idx].checked){
+							sum += parseInt(arr[idx].value)
+						}
+					}
+					app.sum = sum
+					console.log(arr)
+				},
+			    search: function(){
+				    if(!app.sStartTime || !app.sEndTime){
+					    go_alert2('起止时间不能为空')
+				    } else {
+					    app.page = 1
+						app.list = []
+					    app.getList()
+				    }
+			    },
+				
+		    },
+		    mounted: function(){
+		        this.getList()
+		        this.getMemberList();
+		    }
+	    })
+
+	    // 打开申请开票弹窗
+	    function openTab() {
+			app.addSum()
+	        var len = $("input[id^=rId]:checked").length;
+	        if (!len) {
+	            go_alert2('开票金额为0<br/>请选择要开票的记录')
+	            return;
+	        }
+	        $(".yen").text(app.sum);
+		    $(".confirm_box").show()
+	    }
+	    // 关闭申请开票弹窗
+	    function cancel(){
+		    $(".confirm_box").hide()
+	    }
+	    // 确定按钮
+	    function comfirm() {
+		    $(".confirm_box").hide()
+	        // 要执行的回调
+            var filterArr = []
+		    var arr = $('.dPayValueInput')
+		    for (idx in arr) {
+		        if (arr[idx].checked) {
+		            filterArr.push(arr[idx].id.substring(3))
+		        }
+		    }
+		    console.log(filterArr)
+	        //filterArr是发票集
+            //app.kePerson是抬头
+		    localStorage.kp = JSON.stringify({
+		        sOrderIDs: filterArr.join(','),
+		        sTitle: app.kpPerson,
+                iMemberID: app.userInfo.ID
+		    })
+		    location.href = 'myAddr.html?' + 1 
+	    }
+
+	    //滑动加载
+        $("#scrollCtt").scroll(function () {
+            var all_height = $(this)[0].scrollHeight;
+            var dom_height = $(this).height();
+            if ($(this).scrollTop() >= all_height - dom_height - 30) {
+                if (app.isLoad){
+				    if(app.isAjaxIng){
+					    app.page = app.page + 1;
+					    app.getList();
+					    $(".moreText").html('加载中...');
+				    }
+			    }else{
+				    $(".moreText").html('没有更多了');
+			    }
+            }
+        });
+
+        // 历史开票记录
+        //$("#kp-pic").on("click", function () {
+        //    location.href = "kpHistory.html";
+        //});
+
+		//单独的日期选择
+		$(".date1").touchSelect({
+			"type":"date",//可以设置二种选择类型：date,datetime
+			"limited_minutes":200*365*24*60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+			"date_format":"yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+			"callback":function(date_val){//设置回调，默认传参为所选日期时间值
+				app.sStartTime = date_val
+			},
+			"hour_unit":1,//计算小时选择最小时数，默认1
+			"minute_unit":10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+			"init_date":false//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+		});
+		//单独的日期选择
+		$(".date2").touchSelect({
+			"type":"date",//可以设置二种选择类型：date,datetime
+			"limited_minutes":200*365*24*60,//init_date.startDate要设置为true 或者init_date设置为“today”，则设置某个日期起限选多少分钟以内日期，否则限选分钟的起始日期为100年前的今天
+			"date_format":"yy-mm-dd",//设置显示时间格式，可以设置为"yy年mm月dd日","yy-mm-dd","yy/mm/dd"
+			"callback":function(date_val){//设置回调，默认传参为所选日期时间值
+				app.sEndTime = date_val
+			},
+			"hour_unit":1,//计算小时选择最小时数，默认1
+			"minute_unit":10,//计算分钟选择最小分钟数，默认60，计算出为60/x一分钟,
+			"init_date":false//初始化时间设置，可以设置为对象{"defaultDate":"2017-12-1","startDate":true;}，或者"today"字符串,或者fasle不限制模式(默认值为今天)
+		});
+		
+    </script>
+</html>

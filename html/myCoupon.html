@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的优惠券</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+
+	</head>
+
+	<body>
+		<section id="app" class="my-coupon main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>我的优惠券</h1>
+			</header>
+			<div class="flex_1 overflow_auto p_both20r bg-f7">
+				<!-- 列表 -->
+				<div class="coupon-list p_both10r">
+					<div v-for="item in list" class="overflow_hide drag-wrap m-t-20r relative">
+						<!-- 模板 橘色的下边框class为 border-b-ffa127  -->
+						<div :class="item.status!=2 ? 'mod-wrap mod-wrap1 border-b-aaa flex_dom' : 'mod-wrap2 mod-wrap border-b-ffa127 flex_dom'">
+							<div class="flex_1">
+								<p :class="item.status!=2 ? 'flex_dom flex_item_between m-t-20r' : 'flex_dom flex_item_between m-t-20r m-r-20r'">
+									<span :class="item.status!=2 ? 'font30r color-aaa' : 'font30r color-ffa127'">打车代金券</span>
+									<span :class="item.status!=2 ? 'font30r color-aaa' : 'font30r color-ffa127'">&yen;&nbsp;<em class="font46r">10</em></span>
+								</p>
+								<p class="color-999 m-t-15r font24r">有效期</p>
+								<p class="color-999 font24r">2018.07.03-2018.07.04</p>
+								<!-- 已过期 -->
+								<img v-if="item.status==1" src="../img/slice/yiguoqi.png" alt="">
+								<!-- 有效 -->
+								<img v-if="item.status==2" src="../img/slice/youxiao.png" alt="">
+								<!-- 已使用 -->
+								<img v-if="item.status==3" src="../img/slice/yishiyong.png" alt="">
+							</div>
+							<button v-if="item.status!=2" class="wid10rem hgt_full bg-000 color-fff m-l-20r">删<br/>除</button>
+						</div>
+					</div>
+					
+				</div>
+				<div>
+					
+				</div>
+			</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script src="../lib/touchMove.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			list: [
+				{id: 1, status: 1}, //已过期
+				{id: 2, status: 2}, //有效
+				{id: 3, status: 3}, //已使用
+			],
+			couponList: [],
+			userInfo: JSON.parse(localStorage.userInfo)
+		},
+		methods: {
+			getCouponList: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'coupon.getlist',
+					data: {iMemberID: this.userInfo.ID},
+					success: function(res){
+						app.couponList = res.data
+					}
+				})
+			}
+		},
+		mounted: function(){
+			this.getCouponList()
+		}
+	})
+
+	$(".mod-wrap").touchDrag({
+		up_func: function (dom, moveLength) { console.log(dom) },
+		down_func: function (dom, moveLength) { console.log(moveLength) },
+		left_func: function (dom, moveLength) {
+			if(dom.hasClass("mod-wrap1")){
+				dom.removeClass("dele");
+				dom.find("span").addClass("color-black");
+				dom.addClass("dele")
+				dom.addClass("drag")
+			}
+			
+		},
+		right_func: function (dom, moveLength) {
+			if(dom.hasClass("mod-wrap1")){
+				dom.removeClass("dele");
+				dom.find("span").removeClass("color-black");
+				dom.removeClass("drag");
+			}
+		}
+	})
+
+</script>
+ 
+</html>

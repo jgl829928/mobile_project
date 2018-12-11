@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="hgt07rem border-b-eee l-pad20 bg-fff between-center">
+				<div class="wid12rem center">
+					<img class="wid014rem" src="../img/slice/icon-back.png"/>
+				</div>
+				<h3 class="font28r">车主认证</h3>
+				<a :href="'editDriveInfo.html?' + ID" class="wid12rem font-w6 font22r center-end">
+					编辑
+				</a>
+			</header>
+			<section class="flex_1 overflow_auto font24r relative">
+				<div class="Con">
+					<div class="bg-fff l-pad20">
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">所属社区</span>
+							<span class="text-right only_line wid47rem font24r" v-cloak>{{memberInfo.sRegionName}}-{{memberInfo.sStreetName}}-{{memberInfo.sCommunityName}}</span>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">车辆品牌</span>
+							<span class="text-right only_line wid47rem font24r" v-cloak>{{memberInfo.sVehicleBrand}}</span>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">型号</span>
+							<span class="text-right only_line wid47rem font24r" v-cloak>{{memberInfo.sVehicleModel}}</span>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">车牌号</span>
+							<span class="text-right only_line wid47rem font24r" v-cloak>{{memberInfo.sVehicleAscription}}{{memberInfo.sLicensePlate}}</span>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">真实姓名</span>
+							<span class="text-right only_line wid47rem font24r" v-cloak>{{memberInfo.sName}}</span>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">性别</span>
+							<span class="text-right only_line wid47rem font24r" v-if="memberInfo.iGender == 1" v-cloak>男</span>
+							<span class="text-right only_line wid47rem font24r" v-else v-cloak>女</span>
+						</div>
+						<div class="hgt09rem border-b-eee between-center">
+							<span class="color-666">年龄</span>
+							<span class="text-right only_line wid47rem font24r" v-cloak>{{memberInfo.iAge}}</span>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666">兴趣</p>
+							<p v-cloak>{{memberInfo.sInterest}}</p>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666">身份证照片(手持)</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sIDCardFront"/>
+									</div>
+									<span class="color-666">身份证正面</span>
+								</div>
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sIDCardBack"/>
+									</div>
+									<span class="color-666">身份证反面</span>
+								</div>
+							</div>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666">行驶证照片</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sPermitFront"/>
+									</div>
+									<span class="color-666">行驶证正面</span>
+								</div>
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sPermitBack"/>
+									</div>
+									<span class="color-666">行驶证反面</span>
+								</div>
+							</div>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666">驾驶证照片</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sLicenseFront"/>
+									</div>
+									<span class="color-666">驾驶证正面</span>
+								</div>
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sLicenseBack"/>
+									</div>
+									<span class="color-666">驾驶证反面</span>
+								</div>
+							</div>
+						</div>
+						<div class=" p-t-20r border-b-eee p-b-20r">
+							<p class="color-666">商业保单照片</p>
+							<div class="between mt01 fileBox l-pad40">
+								<div class="column-center-b">
+									<div class="wid20rem picArea relative">
+										<img class="wid20rem hgt1rem abolute fileImg" :src="memberInfo.sCommercialInsurance ? memberInfo.sCommercialInsurance : '../img/slice/newfile.png'"/>
+									</div>
+									<span class="color-666">商业保单照片</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</section>
+
+
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			memberInfo: {},
+			ID: location.search.substring(1)
+		},
+		methods: {
+			getMemberInfo: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'member.get',
+					data: {iMemberID: location.search.substring(1)},
+					success: function(res){
+						app.memberInfo = res.data
+					}
+				})
+			}
+		},
+		mounted: function(){
+			this.getMemberInfo()
+		}
+	})
+
+</script>
+ 
+</html>

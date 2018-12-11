@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>已开票信息</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+	</head>
+	<body>
+		<section class="ykp-info main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>已开票信息</h1>
+			</header>
+			<div class="flex_1 overflow_auto bg-f7">
+				<!-- 模板 -->
+				<div class="mod-wrap bg-fff p_both20r font22r overflow_hide m-b-10r" v-if="list" v-for="(item, index) in list">
+					<p class="hgt08rem flex_dom flex_item_between flex_item_mid border-b-eee">
+						<span class="font24r">抬头：{{item.sInvoiceTitle}}</span>
+						<span class="color-ffa127" v-cloak v-if="item.iStatus===0">审核中</span>
+                        <span class="color-ffa127" v-cloak v-else-if="item.iStatus===1">已通过</span>
+						<span class="color-000" v-cloak v-else>已拒绝</span> 
+					</p>
+					<p class="m-t-20r">开票金额：&nbsp;<span class="color-ffa127" v-cloak>&yen;&nbsp;{{item.dAmount>0?item.dAmount.toFixed(2):0.00.toFixed(2)}}</span></p>
+					<p class="m-t-10r" v-cloak>收货人姓名：{{item.sContact}}</p>
+					<p class="m-t-10r" v-cloak>收货人联系方式：{{item.sContactPhone}}</p>
+					<p class="m-t-10r m-b-25r" v-cloak>收货人详细地址：{{item.sAddress}}</p>
+					<div class="border-t-eee p-t-25r p-b-15r l-h-038rem" v-if="item.sDesc" v-cloak>
+						<p>拒绝理由</p>
+						<p class="color-ffa127" v-cloak v-text="item.sDesc"></p>
+					</div>
+				</div>
+				<div class="no_data">
+					<p>暂无已开票信息</p>
+				</div>
+			</div>
+		</section>
+	</body>
+    <script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+    <script type="text/javascript" src="../lib/uploadPreview.js"></script>
+    <script type="text/javascript" src="../lib/form-check.js"></script>
+    <script type="text/javascript" src="../lib/swiper.min.js"></script>
+    <script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+    <script type="text/javascript" src="../lib/page.js"></script>	
+    <script type="text/javascript" src="../lib/vue.js"></script>
+    <script>
+	    getUserInfo()
+	    var app = new Vue({
+	        el: '.main',
+		    data: {
+			    userInfo: JSON.parse(localStorage.userInfo),
+			    page: 1,
+			    list: [],
+			    isLoad: true,
+			    isAjaxIng: false
+		    },
+		    methods: {
+			    getList: function(){
+				    this.isAjaxIng = false
+				    $.ajax({
+					    type: 'post',
+					    url: host + 'inv.getlist',
+					    data: {
+						    iMemberID: this.userInfo.ID,
+						    page: this.page
+					    },
+					    success: function (res) {
+					        if (res.success) {
+                                //
+						    } else {
+							    go_alert2(res.message)
+						    }
+						    app.list = app.list.concat(res.data)
+						    if (res.data.length < 15) {
+							    app.isLoad = false
+						    }
+						    app.isAjaxIng = true
+					    }
+				    })
+			    }
+		    },
+		    mounted: function(){
+		        this.getList()
+		    }
+	    })
+
+	    //滑动加载
+	    $(".flex_1").scroll(function () {
+            var all_height = $(this)[0].scrollHeight;
+            var dom_height = $(this).height();
+            if ($(this).scrollTop() >= all_height - dom_height - 30) {
+                if (app.isLoad){
+				    if(app.isAjaxIng){
+					    app.page = app.page + 1;
+					    app.getList();
+					    $(".moreText").html('加载中...');
+				    }
+			    }else{
+				    $(".moreText").html('没有更多了');
+			    }
+            }
+        });
+    </script>
+</html>

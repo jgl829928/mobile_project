@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+		<link rel="stylesheet" type="text/css" href="../css/ly.css">
+		
+		<style>
+		
+			.markBox img{
+				width: 100%;
+			}
+
+		</style>
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>新增家庭成员</h1>
+			</header>
+			<section class="flex_1 overflow_auto bg-f7 font24r relative">
+				<div class="Con l-pad20 bg-fff">
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666"><i class="color-red">*</i>关系类型</span>
+						</div>
+						<div class="center-end wid47rem">
+							<input type="text" name=""  readonly="readonly" placeholder="请选择关系类型" class="iconRight color-666 otherChoice font24r text-right wid100" value="" />
+						</div>
+					</div>
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 "><i class="color-red">*</i>姓名</span>
+						</div>
+						<input maxlength="6" v-model="submitData.sName" type="text" class="wid50 only_line text-right" placeholder="请填写姓名" value="" />
+					</div>
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 "><i class="color-red">*</i>手机号</span>
+						</div>
+						<input v-model="submitData.sPhone" type="number" class="wid50 only_line text-right" placeholder="请填写手机号" value="" />
+					</div>
+					<div href="javascript:;" class="hgt09rem  between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 "><i class="color-red">*</i>短信验证码</span>
+						</div>
+						<input v-model="submitData.sValidate" type="number" class="wid50 only_line text-right m-r-30r" placeholder="请填短信验证码" value="" />
+						<button @click="getCode" id="getCode" class="color-ffa127 wid20rem text-right l-h-09rem font24r">短信验证码</button>
+					</div>
+					<div class="hgt09rem border-b-eee between-center">
+						<span class="color-666"><i class="color-red">*</i>性别</span>
+						<div class="center-end wid47rem gender">
+							<label @click="setGender(1)" class="color-ffa127 mr03"><input type="radio" name="gender" /><span style="vertical-align: text-top;" class="check_round_small"></span><i class="ml01 color-666">男</i></label>
+							<label @click="setGender(2)" class="color-ffa127"><input type="radio" name="gender" /><span style="vertical-align: text-top;" class="check_round_small"></span><i class="ml01 color-666">女</i></label>
+						</div>
+					</div>
+					<div class="p-t-20r  p-b-20r">
+						<p class="color-666"><i class="color-red">*</i>身份证照片(手持)</p>
+						<div class="between mt01 fileBox l-pad40">
+							<div class="column-center-b">
+								<div class="wid20rem picArea relative">
+									<img @click='uploadImage("sIDCardFront")' class="wid20rem hgt1rem abolute fileImg" :src="submitData.sIDCardFront ? submitData.sIDCardFront :'../img/slice/cert.png'"/>
+									<!-- <input class="flieline" type="file"  value="" /> -->
+									<!-- <img class="closeImg wid03rem" src="../img/slice/icon_close.png"/> -->
+								</div>
+								<span class="color-666">上传身份证正面</span>
+							</div>
+							<div class="column-center-b">
+								<div class="wid20rem picArea relative">
+									<img @click='uploadImage("sIDCardBack")' class="wid20rem hgt1rem abolute fileImg" :src="submitData.sIDCardBack ? submitData.sIDCardBack :'../img/slice/newfile.png'"/>
+									<!-- <input class="flieline" type="file"  value="" /> -->
+									<!--<img class="closeImg wid03rem" src="../img/slice/icon_close.png"/>-->
+								</div>
+								<span class="color-666">上传身份证反面</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="hgt08rem l-pad20 bg-f7 l-h-08rem center">
+					<label><input id="agree" checked type="checkbox" /><span class="check_fang2"></span><i class="ml01">我已阅读并同意</i></label><em onclick="$('.markBox').show()" class="color-ffa127">《平台条款》</em>
+				</div>
+			</section>
+			<button @click="submit" class="bg-ffa127 font24r color-fff around-center hgt08rem">提交审核</button>
+			<!--平台条款弹窗-->
+			<div style="z-index: 1;" class="markBox hide font22r">
+	            <div style="width: 4.7rem;background-color:#FFFFFF;" class="mark l-pad20A">
+	            	<div style="max-height: 6rem;" class="l-h-04rem color-666 Con overflow_auto">
+						<p class="text-center font30r color-000">平台条款</p>
+						<div v-if="articlePlatform" v-html='articlePlatform'></div>
+	            		<!-- 1.读取后台设置的汇率
+						2.最少兑换量由后台设置，当前可兑换量读取金币总数
+						3.输入兑换金币数量后自动读取汇率，显示可获得的HEC数量（精确到小数点后两位，多出的位数四舍五入），金币数量必须为大于0的整数
+						4.点击提交时，判断金币数量，如果小于最小兑换量提示“兑换金币数量过少”，2s后提示自动消失；如果大于当前可兑换数量，提示“兑换 -->
+	            	</div>
+	            	<img style="width: .34rem!important;" onclick="$('.markBox').hide()" class="picClose" src="../img/slice/icon_close.png"/>
+	            </div>
+			  </div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			submitData: {
+				iMainID: JSON.parse(localStorage.userInfo).ID,
+				sIDCardFront: '',
+				sIDCardBack: '',
+			},
+			articlePlatform: ''
+		},
+		methods: {
+			setGender: function(gender){
+				app.submitData.iGender = gender
+			},
+			checkForm: function(){
+				if(!app.submitData.iType){
+					go_alert2('请选择关系类型')
+					return false
+				}
+				if(!app.submitData.sName){
+					go_alert2('请输入真实姓名')
+					return false
+				}
+				if(!phoneReg.test(app.submitData.sPhone)){
+					go_alert2('请输入正确的手机号码')
+					return false
+				}
+				if(!app.submitData.iGender){
+					go_alert2('请选择性别')
+					return false
+				}
+				if(!app.submitData.sIDCardFront){
+					go_alert2('请上传身份证正面照')
+					return false
+				}
+				if(!app.submitData.sIDCardBack){
+					go_alert2('请上传身份证反面照')
+					return false
+				}
+				if(!$("#agree")[0].checked){
+					go_alert2('请先阅读并同意《平台条款》')
+					return false
+				}
+				return true
+			},
+			submit: function(){
+				if(app.checkForm()){
+					$.ajax({
+						type: 'post',
+						url: host + 'member.regfamily',
+						data: app.submitData,
+						success: function(res){
+							if(res.success){
+								go_alert2(res.message, function(){
+									location.href = "myMember.html"
+								})
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				}
+			},
+			getArticlePlatform: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'article.platform',
+					success: function(res){
+						app.articlePlatform = res.data.sContent
+					}
+				})
+			},
+			uploadImage: function(type){
+				var u = navigator.userAgent;
+				var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+				var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+				if (isAndroid) {
+					WebViewJavascriptBridge.uploadImage(type)
+				}
+				if (isiOS) {
+				    try {
+				        webkit.messageHandlers.uploadImage.postMessage(type)
+				    }
+				    catch (e) { }
+				}
+			},
+			getCode: function () {
+				if (phoneReg.test(app.submitData.sPhone)) {
+					codeDownTime($("#getCode"))
+					$.ajax({
+						type: 'post',
+						url: host + 'member.getaddfamilycode',
+						data: {
+							iMainID: JSON.parse(localStorage.userInfo).ID,
+							iType: app.submitData.iType,
+							sPhone: app.submitData.sPhone
+						},
+						success: function (res) {
+							if (res.success) {
+								// go_alert2(res.message)
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				} else {
+					go_alert2('请输入正确的手机号')
+				}
+
+			}
+		},
+		mounted: function(){
+			this.getArticlePlatform()
+		}
+	})
+
+	var otherData=[{id:1,name:"父母"},{id:2,name:"配偶"},{id:3,name:"子女"}]
+		$(".otherChoice").touchSelect({
+			type:"other",
+			data:otherData,
+			callback:function(val,dom){
+				app.submitData.iType = val.id
+	        }
+		})
+
+	function getImgSrc(type, imgSrc){
+		app.submitData[type] = imgSrc
+	}
+</script>
+ 
+</html>

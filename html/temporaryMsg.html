@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section class="main hgt_full bg-f7 flex_column" id="app">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>{{urlParam.type?'临时消息':'聊天'}}</h1>
+			</header>
+			<section class="flex_1 mt01 overflow_auto bg-fff font24r relative" id="chatCtt" v-cloak>
+				<div class="Con l-pad20 bg-fff">
+					<div v-for="item in chat">
+						<div class="flex_dom pv02" v-if="item.iMemberID == userInfo.ID">
+							<div class="flex_1 ph02">
+								<div class="hgt04rem l-h-04rem center-end">
+									<div class="center">
+										<div class="mr02">
+											<img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+											<em>{{item.iSelfTotalIntegral}}</em>
+										</div>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iSelfMemberLevel == 1">随员</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iSelfMemberLevel == 2">三秘</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iSelfMemberLevel == 3">二秘</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iSelfMemberLevel == 4">一秘</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iSelfMemberLevel == 5">参赞-{{item.sSelfOccupation}}</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iSelfMemberLevel == 6">大使</button>
+										<span class="font28r only_line boxName">{{item.sSelfName | filterName}}{{item.iSelfGender?(item.iSelfGender==1?"先生":"女士"):""}}</span>
+									</div>
+								</div>
+								<div class="font22r center-end mt01 relative flex_dom">
+									<div class="msgArea">
+										{{item.sContent}}
+									</div>
+									<span class="graySJ2"></span>
+								</div>
+							</div>
+							<div class="cur_head coverImg" :style="{backgroundImage: 'url('+(item.sSelfImageSrc?item.sSelfImageSrc:'../img/slice/defaultHeader.png')+')'}"></div>
+						</div>
+						<div class="flex_dom pv02" v-else>
+							<div class="cur_head coverImg" :style="{backgroundImage: 'url('+(item.sFriendImageSrc?item.sFriendImageSrc:'../img/slice/defaultHeader.png')+')'}"></div>
+							<div class="flex_1 ph02">
+								<div class="hgt04rem l-h-04rem flex_dom flex_item_mid">
+									<div class="center">
+										<span class="font28r only_line boxName">{{item.sFriendName | filterName}}{{item.iFriendGender?(item.iFriendGender==1?"先生":"女士"):""}}</span>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iFriendMemberLevel == 1">随员</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iFriendMemberLevel == 2">三秘</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iFriendMemberLevel == 3">二秘</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iFriendMemberLevel == 4">一秘</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iFriendMemberLevel == 5">参赞-{{item.sFriendOccupation}}</button>
+										<button class="p_icon1 bg-orange color-fff mr01" v-if="item.iFriendMemberLevel == 6">大使</button>
+										<div class="ml02">
+											<img class="icon-diamond" src="../img/slice/icon-diamond.png" alt="" />
+											<em>{{item.iFriendTotalIntegral}}</em>
+										</div>
+									</div>
+								</div>
+								<div class="font22r mt01 relative flex_dom">
+									<div class="msgArea">
+										{{item.sContent}}
+									</div>
+									<span class="graySJ"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="bg-f7 wid100 font24r color-fff">
+				<div class="hgt19rem wid100 l-pad20A">
+					<textarea v-model="message" class="wid100 levMsg hgt_full bg-fff" placeholder="编辑文字留言~" name="" rows="" cols=""></textarea>
+				</div>
+				<div @click="sendMsg()" class="bg-ffa127 font24r color-fff around-center hgt08rem">
+					发送
+				</div>
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.getItem('userInfo')),
+			urlParam: {
+                type: ''
+			},
+			message: '',
+			chat: []
+		},
+		filters: {
+		    filterName: function (value) {
+		        if (!value) return;
+		        var str = '';
+		        for (var i = 0; i < value.length - 1; i++) {
+		            str += '*';
+		        }
+		        return value.substring(0, 1) + str;
+		    }
+		},
+		methods: {
+			sendMsg: function(){
+				if(!app.message){
+					go_alert2('请填写留言');
+					return;
+				}
+				$.ajax({
+					type:"post",
+					data: {
+						"iMemberID": app.userInfo.ID,
+					    "iRelMemberID": app.urlParam.id,
+					    "sContent": app.message
+					},
+					url:host+"chat.add",
+					success: function(res){
+					    if (res.success) {
+					        app.message = '';
+							app.getchat();
+						}
+					}
+				});
+			},
+			getchat: function(){
+				this.urlParam = GetRequest();
+				var that = this;
+				$.ajax({
+					type:"post",
+					data: {
+						"iMemberID": that.userInfo.ID,
+	    				"iRelMemberID": that.urlParam.id
+					},
+					url: host+"chat.getlist",
+					success: function(res){
+						if(res.success){
+							app.chat = res.data;
+							setTimeout(function(){
+								var ele = document.getElementById('chatCtt');
+								ele.scrollTop = ele.scrollHeight;
+							},0);
+						}else{
+							go_alert2(res.message);
+						}
+					}
+				});
+			}
+		},
+		mounted: function(){
+			this.getchat();
+		}
+	})
+</script>
+ 
+</html>

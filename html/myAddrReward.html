@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="hgt07rem border-b-eee l-pad20 bg-fff between-center">
+				<div class="wid12rem center">
+					<img class="wid014rem" src="../img/slice/icon-back.png"/>
+				</div>
+				<h3 class="font28r">我的地址</h3>
+				<div class="wid12rem font-w6 font22r center-end"></div>
+			</header>
+			<section class="flex_1 overflow_auto bg-f7 font24r relative">
+				<div class="Con">
+					<ul>
+		    			<li v-for="item in addrList" class="addList bg-fff l-pad20">
+		    				<label class="pv02 border-b-eee wid100">
+		    					<div class="alTop center">
+		    						<label class="mr01 color-orange pv01">
+			            				<input type="radio" name="address" value="" class="hide" />
+			            				<span class="check_round_small"></span>
+			            			</label>
+			    					<span class="mr01 font-w6" v-cloak>{{item.sContact}}</span>
+			    					<span class="color-666" v-cloak>{{item.sContactPhone}}</span>
+			    				</div>
+			    				<p class="gray666 m-l-35r l-h-04rem" v-cloak>
+			    					{{item.sProvince}}{{item.sCity}}{{item.sRegion}}{{item.sAddress}}
+			    				</p>
+		    				</label>
+		    				<div class="hgt08rem center-end">
+		    					<div class="between-center">
+		    						<p class="m-r-30r center">
+		    							<img class="wid026rem m-r-5r" src="../img/slice/icon_textadd.png"/>
+		    							<span>编辑</span>
+		    						</p>
+		    						<p class="center">
+		    							<img class="wid026rem m-r-5r" src="../img/slice/icon_dele.png"/>
+		    							<span>删除</span>
+		    						</p>
+		    					</div>
+		    				</div>
+		    			</li>
+		    		</ul>
+				</div>
+			</section>
+			<a href="javascript:void(0)" class="bg-ffa127 font24r color-fff around-center hgt08rem">
+				确定
+			</a>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			addrList: []
+		},
+		methods: {
+			getAddrList: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'addr.getlist',
+					data: {iMemberID: this.userInfo.ID},
+					success: function(res){
+						app.addrList = res.data
+					}
+				})
+			}
+		},
+		mounted: function(){
+			this.getAddrList()
+		}
+	})
+	
+</script>
+ 
+</html>

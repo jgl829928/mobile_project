@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>验证手机号</h1>
+			</header>
+			<section class="flex_1 overflow_auto font24r relative">
+				<div class="Con">
+					<div class="text-center">
+						<img class="wid20rem loginLogo" src="../img/slice/icon_logoyellow.png"/>
+					</div>
+					<div style="box-shadow: none;" class="LoginForm m-t-40r bg-fff">
+						<p class="color-666">车主手机号码</p>
+						<div class="inputBox border-b-eee">
+							<input maxlength="11" v-model="submitData.sPhone" class="font28r" type="number" placeholder="请填写手机号码" value="" />
+						</div>
+						<p class="color-666 mt03">验证码</p>
+						<div class="inputBox between-center border-b-eee">
+							<input v-model="submitData.sValidate" type="text" class="wid25rem font28r" placeholder="请填写验证码" value="" />
+							<button @click="getTextCode" id="getCode" class="color-ffa127 font24r">获取验证码</button>
+						</div> 
+						<div class="text-center m-t-90r">
+							<input @click="submit" type="submit" class="keepBtn font24r" value="确定" name="" />
+						</div>
+					</div>
+				</div>
+			</section>
+	      	<!--手机号已注册-->
+			<div style="z-index: 1;" class="markBox2 hide font24r">
+	            <div style="width: 4.7rem;" class="mark overflow_hide">
+	            	<div class="Con text-center color-333 border-b-eee p-a-50r bg-fff">
+	            		该手机号已注册，可直接登录
+	            	</div>
+	            	<div class="hgt08rem bg-fff around-center ">
+	            		<button onclick="$('.markBox2').hide()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+	            		<button @click="toLogin" class="wid50 color-fff hgt08rem color-000 font24r">登录</button>
+	            	</div>
+	            </div>
+	      	</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script type="text/javascript">
+	var app = new Vue({
+		el: "#app",
+		data: {
+			submitData: {}
+		},
+		methods: {
+			validatePhone: function(){
+				var validatePhone = phoneReg.test(app.submitData.sPhone)
+				if(!validatePhone){
+					go_alert2("请输入正确的手机号")
+					return false
+				}
+				else{
+					return true
+				}
+			},
+			validateTxtCode: function(){
+				if(!app.submitData.sValidate){
+					go_alert2("请输入正确的短信验证码")
+					return false
+				}
+				else{
+					return true
+				}
+			},
+			getTextCode: function(){
+				if(app.validatePhone()){
+					
+					$.ajax({
+						type: 'post',
+						url: host + 'reg.getcode',
+						data: {sPhone: app.submitData.sPhone},
+						success: function(res){
+							if(res.message == "短信发送成功"){
+								codeDownTime($("#getCode"))
+								return
+							}
+							if(res.message == "手机号已存在"){
+								$('.markBox2').show()
+								return
+							}
+							if(res.success == false){
+								go_alert2(res.message)
+								return
+							}
+						}
+					})
+				}
+			},
+			checkForm: function(){
+				if(!app.validatePhone()){
+					return
+				}
+				// app.validatePhone()
+				app.validateTxtCode()
+			},
+			submit: function(){
+				app.checkForm()
+				if(app.validatePhone() && app.submitData.sValidate){
+					$.ajax({
+						type: 'post',
+						url: host + 'code.vali',
+						data: {sPhone: app.submitData.sPhone, sValidate: app.submitData.sValidate},
+						success: function(res){
+							// if(res.message == "短信验证成功"){
+							// 	app.toReg('?'+app.submitData.sPhone)
+							// } 
+							// if(res.message == '短信验证失败') {
+							// 	go_alert2(res.message)
+							// }
+							if(res.success){
+								app.toReg('?'+app.submitData.sPhone)
+							} else {
+								go_alert2(res.message)
+							}
+						}
+					})
+				} 
+			},
+			toLogin: function(){
+				location.href = "login.html"
+			},
+			toReg: function(url){
+				location.href = "reg.html" + url
+			}
+		}
+	})
+
+</script>
+ 
+</html>

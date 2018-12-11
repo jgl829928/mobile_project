@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+	</head>
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>我的奖励</h1>
+			</header>
+			<section id="scrollCtt" class="flex_1 bg-f7 overflow_auto font24r relative">
+				<div class="Con awardList">
+					<ul>
+						<li v-for="item in list" :class="(item.iExchangeState == 1 || !item.bIsWin) ? 'bg-fff canDel' : 'bg-fff'">
+							<div class="flex_dom">
+								<div class="inline_div l-pad20 flex_1">
+									<div class="hgt08rem border-b-eee between-center">
+										<span v-if="item.bIsWin" class="font-w6 font24r">中奖</span>
+										<span v-else class="font-w6 font24r">未中奖</span>
+										<i v-if="item.iOperateState == 0 && item.bIsWin" class="color-ffa127 font22r">未领取</i>
+										<i v-if="item.iOperateState == 1 && item.iExchangeState == 0 && item.bIsWin" class="color-ffa127 font22r">领取中</i>
+										<i v-if="item.iOperateState == 1 && item.iExchangeState == 1 && item.bIsWin" class="color-ffa127 font22r">已领取</i>
+									</div>
+									<div class="awardBot p-b-10r wid100">
+										<div class="hgt06rem between-center">
+											<span class="font22r" v-text="item.dCreateTime.replace(/-/g,'.').substring(0,16)"></span>
+											<p class="font22r">消耗：<i v-cloak>{{item.iIntegral}}</i>积分</p>
+										</div>
+										<div v-if="item.bIsWin" class="wid100 relative hgt20rem coverImg" :style="{backgroundImage: 'url('+item.sPrizeImageSrc+')'}">
+											<!--<img class="wid100 hgt_full" :src="item.sPrizeImageSrc"/>-->
+											<span v-if="item.iType == 0" v-cloak class="leftBg color-fff">虚拟</span>
+											<span v-else v-cloak class="leftBg color-fff">实物</span>
+											<img v-if="!item.iStatus" class="worknot" src="../img/slice/icon_working.png"/>
+											<img v-else class="worknot" src="../img/slice/icon_used.png"/>
+											<!--<div v-if="item.iOperateState == 0" class="deadLine font22r l-pad20 color-fff center" v-text="'有效期' + item.sPrizeExpiryDateStart.replace(/-/g,'.') + '-' + item.sPrizeExpiryDateEnd.replace(/-/g,'.')">-->
+                                            <div v-if="item.iOperateState == 0" class="deadLine font22r l-pad20 color-fff center" v-text="(item.sPrizeExpiryDateEnd.length ? '有效期' + item.sPrizeExpiryDateStart.replace(/-/g,'.') + '-' + item.sPrizeExpiryDateEnd.replace(/-/g,'.') : '长期有效')">
+                                                    <!-- 有效期2018.06.22-2018.08.30 -->
+                                                </div>
+										</div>
+										<div v-if="item.bIsWin" class="hgt06rem between-center">
+											<span class="font22r only_line wid75" v-cloak>{{item.sPrizeName}}</span>
+											<button @click="toGetReward(item.ID, item.iType)" style="line-height: .36rem" v-if="item.iOperateState == 0 && !item.iStatus" class="getAward color-fff bg-ffa127">去领奖</button>
+										</div>
+
+										<!--<p v-if="item.iOperateState == 1 && item.iExchangeState == 1" class="font22r">快递公司：{{item.sPostName}}</p>
+										<p v-if="item.iOperateState == 1 && item.iExchangeState == 1" class="font22r">快递单号：{{item.sPostCode}}</p>-->
+                                        <p v-if="item.sPostName" class="font22r">快递公司：{{item.sPostName}}</p>
+                                        <p v-if="item.sPostCode" class="font22r">快递单号：{{item.sPostCode}}</p>
+									</div>
+								</div>
+								<button @click="actDel(item.ID)" class="deleBtn">删除</button>
+							</div>
+						</li>
+						<!--没数据让上面的li不显示-->
+						<div v-if="list.length == 0" style="top:0;position:relative; height: 2.5rem;" class="no_data m-t-90r">
+		                    <p class="color-999">暂无奖励</p>
+		                </div>
+					</ul>
+					<p v-if="list.length" class="moreText text-center l-h-06rem"></p>
+				</div>
+				
+			</section>
+			<!--联系客服-->
+			<div style="z-index: 13;display: none" class="markBox2 hide font24r">
+	            <div style="width: 4.7rem;" class="mark overflow_hide">
+	            	<div class="Con text-center color-333 border-b-eee p-a-50r bg-fff" v-cloak>
+	            		联系客服即可完成兑换<br />
+						客服电话：{{Settings.sPhone}}
+	            	</div>
+	            	<div class="hgt08rem bg-fff around-center ">
+	            		<button onclick="$('.markBox2').hide()" class="wid50 font24r border-r-eee hgt08rem color-666">取消</button>
+	            		<a @click="goDail()" class="wid50 color-fff hgt08rem color-000 font24r around-center">拨号</a>
+	            	</div>
+	            </div>
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script src="../lib/touchMove.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			list: [],
+			page: 1,
+			isLoad: true,
+			isAjaxIng: false,
+			Settings: {}
+		},
+		methods: {
+			getList: function(){
+				this.isAjaxIng = false
+				$.ajax({
+					type: 'post',
+					url: host + 'act.getlist',
+					data: {
+						iMemberID: this.userInfo.ID,
+						page: this.page
+					},
+					success: function(res){
+						app.list = app.list.concat(res.data)
+						if (res.data.length < 15) {
+							app.isLoad = false
+						}
+						if(res.data.length == 0){
+							$(".moreText").html('没有更多了');
+						}
+						app.isAjaxIng = true
+						setTimeout(function () {
+							app.drag()
+						}, 0)
+					}
+				})
+			},
+			drag: function () {
+				$(".Con ul li.canDel").touchDrag({
+					up_func: function (dom, moveLength) { console.log(moveLength) },
+					down_func: function (dom, moveLength) { console.log(moveLength) },
+					left_func: function (dom, moveLength) {
+						dom.siblings().find(">div").removeClass("dele");
+						dom.find(">div").addClass("dele")
+					},
+					right_func: function (dom, moveLength) {
+						dom.find(">div").removeClass("dele")
+					}
+				})
+			},
+			actDel: function(iExchangeID){
+				$.ajax({
+					type: 'post',
+					url: host + 'act.del',
+					data: {iExchangeID},
+					success: function(res){
+						if(res.success){
+							go_alert2("记录已删除")
+							app.page = 1
+							app.reList(iExchangeID)
+						} else {
+							go_alert2(res.message)
+						}
+					}
+				})
+			},
+			reList: function(id){
+				// for(idx in app.list){
+				// 	if(app.list[idx].ID == id){
+				// 		app.list.splice(idx,1)
+				// 	}
+				// }
+				// $(".Con ul li.canDel").find(">div").removeClass("dele");
+				app.list = []
+				app.getList()
+			},
+			toGetReward: function(iExchangeID, iType){
+				console.log(iType)
+				if(iType == 0){
+					$('.markBox2').show()
+					app.iExchangeID = iExchangeID
+				} else {
+					location.href ='myAddr.html?' + iExchangeID
+				}
+			},
+			getAct: function () {
+				$.ajax({
+					type: 'post',
+					url: host + 'act.get',
+					data: { iMemberID: this.userInfo.ID },
+					success: function (res) {
+						app.Settings = res.data.Settings
+					}
+				})
+			},
+			goDail: function(){
+				console.log(app)
+				location.href = 'tel:' + app.Settings.sPhone
+				$.ajax({
+					type: 'post',
+					url: host + 'act.exchange',
+					data: {iExchangeID: app.iExchangeID},
+					success: function(res){
+
+					}
+				})
+			}
+		},
+		mounted: function(){
+			this.getAct()
+			this.getList()
+		}
+	})
+
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+		console.log('滑动')
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+				if(app.isAjaxIng){
+					app.page = app.page + 1;
+					app.getList();
+					$(".moreText").html('加载中...');
+				}
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+    });
+
+</script>
+ 
+</html>

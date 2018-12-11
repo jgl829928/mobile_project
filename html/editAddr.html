@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column" v-cloak>
+			<header class="hgt07rem border-b-eee l-pad20 bg-fff between-center">
+				<div class="wid12rem center">
+					<img class="wid014rem" src="../img/slice/icon-back.png"/>
+				</div>
+				<h3 class="font28r">{{type.type==1 ? '新增地址' : '编辑地址'}}</h3>
+				<div class="wid12rem font-w6 font22r center-end"></div>
+			</header>
+			<section class="flex_1 overflow_auto bg-f7 font24r relative">
+				<div class="Con bg-fff">
+					<div href="javascript:;" class="hgt09rem l-pad20 between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666">联系人</span>
+						</div>
+						<input maxlength="6" v-model="submitData.sContact" type="text" class="wid50 only_line text-right" placeholder="请输入您的姓名" value="" />
+					</div>
+					<div href="javascript:;" class="hgt09rem l-pad20 between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666 ">电话</span>
+						</div>
+						<input v-model="submitData.sContactPhone" type="text" class="wid50 only_line text-right" placeholder="请输入您的电话号码" value="" />
+					</div>
+					<div href="javascript:;" class="hgt09rem l-pad20 between-center border-b-eee">
+						<div class="center wid50">
+							<span class="color-666">地址</span>
+						</div>
+						<input type="text" readonly="readonly" class="wid50 my_erea only_line iconRight text-right" placeholder="请选择地址" value="" />
+					</div>
+					<div class=" l-pad20A border-b-eee">
+						<p class="color-666">详细地址</p>
+						<textarea maxlength="50" v-model="submitData.sAddress" class="regTxt hgt04rem" name="" placeholder="请填写详细地址，如门牌号等" rows="" cols=""></textarea>
+					</div>
+				</div>
+			</section>
+			<div @click="submitAddr()" class="bg-ffa127 font24r color-fff around-center hgt08rem">
+				确认
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2EX4jzoGjbIGm3eKVOlE0gRwk6ouF24B"></script>
+
+<script type="text/javascript">
+	getUserInfo();
+	var map = new BMap.Map("bMap");
+	var myGeo = new BMap.Geocoder();
+	var app = new Vue({
+		el: '#app',
+		data: {
+			type: {},
+			userInfo: JSON.parse(localStorage.userInfo),
+			submitData: {
+				iMemberID: JSON.parse(localStorage.userInfo).ID,
+				sContact: '',
+				sContactPhone: '',
+				sProvince: '',
+				sCity: '',
+				sAddress: '',
+				sRegion: '',
+				bIsDefault: false
+			}
+		},
+		methods: {
+			submitAddr: function(){
+				var checkForm = app.checkForm();
+				if(checkForm){
+					var city = '';
+					if(!app.submitData.sRegion){
+						city = app.submitData.sProvince
+					}else{
+						city = app.submitData.sCity
+					}
+					if(app.type.type==0){
+						delete app.submitData.iMemberID;
+					}
+					var addr = app.submitData.sProvince+app.submitData.sCity+app.submitData.sRegion+app.submitData.sAddress;
+					myGeo.getPoint(addr, function(point){
+						if (point) {
+							app.submitData.sLongitude = point.lng;
+							app.submitData.sLatitude = point.lat;
+							$.ajax({
+								type: 'post',
+								url: host + (app.type.type==1?'addr.add':'addr.edit'),
+								data: app.submitData,
+								success: function(res){
+								    go_alert2(res.message);
+								    if (res.success) {
+								        setTimeout(function () {
+								            goBack();
+								        }, 2000);
+								    }
+								}
+							})
+						}else{
+							alert("您选择地址没有解析到结果!");
+						}
+					}, city);
+				}
+			},
+			checkForm: function(){
+				if(!app.submitData.sContact){
+					go_alert2('请完善联系人信息')
+					return false
+				}
+				if(!app.submitData.sContactPhone){
+					go_alert2('请完善联系人电话')
+					return false
+				}
+				if(!phoneReg.test(app.submitData.sContactPhone)){
+					go_alert2('请输入正确的手机号码')
+					return false
+				}
+				if (!app.submitData.sRegion || !app.submitData.sCity) {
+					go_alert2('请完善地址信息')
+					return false
+				}
+				if(!app.submitData.sAddress){
+					go_alert2('请完善详细地址')
+					return false
+				}
+				return true
+			},
+		},
+		mounted: function(){
+			var urlParam = GetRequest();
+			this.type = urlParam;
+			console.log(!urlParam.type);
+			if(urlParam.type == 0){
+				$.ajax({
+					type:"post",
+					data:{
+						iAddressID: urlParam.id
+					},
+					url:host+"addr.get",
+					success: function(res){
+						if(res.success){
+							app.submitData.iAddressID = urlParam.id;
+							app.submitData.sContact = res.data.sContact;
+							app.submitData.sContactPhone = res.data.sContactPhone;
+							app.submitData.sProvince = res.data.sProvince;
+							app.submitData.sCity = res.data.sCity;
+							app.submitData.sAddress = res.data.sAddress;
+							app.submitData.sRegion = res.data.sRegion;
+							if(res.data.sRegion){
+								$('.my_erea').val(res.data.sProvince+','+res.data.sCity+','+res.data.sRegion);
+							}else{
+								$('.my_erea').val(res.data.sProvince+','+res.data.sCity);
+							}
+							initErea()
+						}else{
+							go_alert2(res.message);
+						}
+					}
+				});
+			}else{
+				initErea()
+			}
+		}
+	})
+	function initErea(){
+		$(".my_erea").touchSelect({
+			type:1,//设置是否是联动模式，1是多列联动模式，other 为单列模式
+			data:LAreaData,//数据源变量
+			has_cityerea:true,//是否需要显示选择城区
+			callback:function(erea_json){//回调，传入参数为省市区id字符串
+				console.log(erea_json);
+				var strArr = erea_json.name.split(',');
+				if (strArr.length == 2) {
+				    app.submitData.sProvince = strArr[0] || ""
+				    app.submitData.sCity = strArr[0] || ""
+				    app.submitData.sRegion = strArr[1] || ""
+				} else if (strArr.length == 3) {
+				    app.submitData.sProvince = strArr[0] || ""
+				    app.submitData.sCity = strArr[1] || ""
+				    app.submitData.sRegion = strArr[2] || ""
+				}
+				
+			}
+		})
+	}
+	
+</script>
+ 
+</html>

@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>积分排行榜</h1>
+			</header>
+			<section class="flex_1 overflow_auto colorBgRed font24r relative">
+				<div class="con  font24r">
+					<div class="wid100 text-center color-fff l-pad20">
+						<p class="m-t-45r">我的名次</p>
+						<p class="font36r color-ffdd6b">第<span class="font60r" v-cloak>{{chartsList.iIndex}}</span>名</p>
+					</div>
+					<div style="min-height: 5rem;" class="wid100 m-t-40r radius02r l-pad20 overflow_hide">
+						<div class="Con">
+							<div class="detlArea p-b-10r">
+								<div style="overflow: visible" class="hgt06rem radiusTOP bg-c6332a font22r color-fff l-pad20 between-center relative">
+									<p class="wid33 text-center">排名</p>
+									<p class="wid33 text-center">用户</p>
+									<p style="width: 1.6rem;cursor: pointer" v-cloak @click="toggleFilter($event)" class="text-leftt iconBotW">{{isActive}}</p>
+									<div @click="toggleFilter($event)" v-cloak v-if="filterStatus" style="cursor: pointer;right: 0;z-index: 11;top: .6rem;background-color: #c6332a;width: 1.85rem; height: .5rem;line-height: .5rem;padding-left: .05rem;border-bottom-left-radius: .08rem;border-bottom-right-radius: .08rem;" class="border-t-initial filter abolute ">
+										<p v-cloak>{{isNotActive}}</p>
+									</div>
+								</div>
+								<div class="luckLists overflow_hide">
+									<div v-for="(item, idx) in chartsList.IntegralList" class="luckList rankArea l-pad20 between-center">
+										<p class="wid33 text-center">
+											<span v-cloak>{{idx + 1}}</span>
+										</p>
+										<div class="wid33 around-center">
+											<div class="center">
+												<img v-cloak class="wid05rem hgt05rem radius_half" :src="item.sMemberImageSrc ? item.sMemberImageSrc : '../img/slice/defaultHeader.png'"/>
+												<span class="wid12rem ml02 only_line" v-if="item.sMemberNickname" v-cloak>{{item.sMemberNickname}}</span>
+												<span class="wid12rem ml02 only_line" v-else v-cloak>{{item.sMemberNickname}}</span>
+											</div>
+										</div>
+										<p class="wid33 text-center">
+											<span class="ml02" v-text="isActive == '本周积分排行' ? item.iIntegral : item.iTotalIntegral"></span>
+										</p>
+									</div>
+									<div style="top:0;position:relative; height: 2.5rem;" class="no_data m-t-90r">
+				                        <p class="color-fff">暂无排名</p>
+				                    </div>
+								</div>
+								
+							</div>
+							
+						</div>
+					</div>
+					
+				</div>
+			</section>
+
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			filterStatus: false,
+			isActive: '本周积分排行',
+			isNotActive: '总积分排行',
+			chartsList: {},
+			userInfo: JSON.parse(localStorage.userInfo)
+		},
+		methods: {
+			getCharts: function(iType){
+				$.ajax({
+					type: 'post',
+					url: host + 'member.getintlist',
+					data: {iType, iMemberID: this.userInfo.ID},
+					success: function(res){
+						app.chartsList = res.data
+					}
+				})
+			},
+			toggleFilter: function(e){
+			    app.filterStatus = !app.filterStatus
+				if(e.target.innerText != app.isActive){
+					app.isNotActive = app.isActive
+					app.isActive = e.target.innerText
+				}
+			}
+		},
+		mounted: function(){
+			this.getCharts(0)
+		},
+		watch: {
+			isActive: function(val){
+				if(app.isActive == '本周积分排行'){
+					app.getCharts(0)
+				} else {
+					app.getCharts(1)
+				}
+			}
+		}
+	})
+	
+</script>
+ 
+</html>

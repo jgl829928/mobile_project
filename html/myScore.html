@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>我的积分</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+        <link rel="stylesheet" type="text/css" href="../css/zyl.css">
+
+
+	</head>
+
+	<body>
+		<section id="app" class="my-score main hgt_full flex_column">
+			<header class="curHeader">
+				<a class="goBack" href="javascript:;"></a>
+				<h1>我的积分</h1>
+			</header>
+			<div id="scrollCtt" class="flex_1 overflow_auto bg-f7">
+				<div class="total-info-wrap flex_dom flex_column flex_item_center">
+					<p class="text-center color-fff font24r">剩余积分数</p>
+					<p class="text-center color-fff font48r m-t-15r l-s-5r" v-cloak>{{score}}</p>
+				</div>
+				<p class="font24r fw_600 p_both20r l-h-07rem">明细</p>
+				<!-- 列表 -->
+				<div class="p_both20r bg-fff relative">
+					<div v-for="item in list" class="hgt1rem font24r flex_item_center flex_dom flex_column border-b-eee m_both20r">
+						<!-- 充值和充值时间 -->
+						<p class="flex_dom flex_item_between">
+							<span class="color-ffbd43" v-cloak>{{item.sTitle}}</span>
+							<!-- <span class="color-ffbd43">打赏提现</span> -->
+							<!-- <span class="color-ffbd43">消费</span> -->
+							<span class="font22r color-999" v-text="item.sChangeTime.replace(/-/g,'.')"></span>
+						</p>
+						<!-- 充值金额和余额 -->
+						<p class="flex_dom flex_item_between">
+							<span v-cloak><em v-if="item.iType == 0">+</em><em v-else>-</em>{{item.iIntegral}}</span>
+						</p>
+					</div>
+					<div class="no_data">
+						<p>暂无数据</p>
+					</div>
+				</div>
+				<p class="moreText text-center l-h-06rem"></p>
+			</div>
+		</section>
+
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+
+<script>
+	getUserInfo()
+	var app = new Vue({
+		el: '#app',
+		data: {
+			userInfo: JSON.parse(localStorage.userInfo),
+			page: 1,
+			isLoad: true,
+			isAjaxIng: false,
+			list: [],
+			score: ''
+		},
+		methods: {
+			getList: function(){
+				this.isAjaxIng = false
+				$.ajax({
+					type: 'post',
+					url: host + 'member.getreclist',
+					data: {iMemberID: this.userInfo.ID, page: this.page},
+					success: function(res){
+						app.list = app.list.concat(res.data.RecordList)
+						app.score = res.data.iSurplusIntegral
+						if (res.data.RecordList.length < 15) {
+							app.isLoad = false
+						}
+						app.isAjaxIng = true
+					}
+				})
+			},
+		},
+		mounted: function(){
+			this.getList()
+		}
+	})
+
+	//滑动加载
+    $("#scrollCtt").scroll(function () {
+        var all_height = $(this)[0].scrollHeight;
+        var dom_height = $(this).height();
+        if ($(this).scrollTop() >= all_height - dom_height - 30) {
+            if (app.isLoad){
+				if(app.isAjaxIng){	
+					app.page = app.page + 1;
+					app.getList();
+					$(".moreText").html('加载中...');
+				}
+			}else{
+				$(".moreText").html('没有更多了');
+			}
+        }
+    });
+
+</script>
+ 
+</html>

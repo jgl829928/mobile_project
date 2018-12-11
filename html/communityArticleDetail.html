@@ -1,0 +1,491 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>爱心随行</title>
+		<meta name="keywords" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--分享使用-->
+		<meta itemprop="name" content="" />
+		<meta itemprop="description" name="description" content="" />
+		<meta itemprop="image" content="img_url" />
+		<meta name="format-detection" content="telephone=no" />
+        <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="../css/global.css">
+        <link rel="stylesheet" type="text/css" href="../css/page.css">
+        <link rel="stylesheet" type="text/css" href="../css/pyf.css">
+        <link rel="stylesheet" type="text/css" href="../css/ly.css">
+		<link rel="stylesheet" type="text/css" href="../css/zyl.css">
+		
+		<style>
+		
+		#shareTab {
+			display: none;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 9;
+			background-color: rgba(0, 0, 0, 0.3);
+		}
+		#shareTab .share-wrap {
+			position: absolute;
+			bottom: 1rem;
+			width: 100%;
+			height: 2.5rem;
+		}
+		.close-btn {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: .9rem;
+			line-height: .9rem;
+			background-color: #fff;
+			display: block;
+			color: #333;
+		}
+		.m-r-50r{margin-right: .5rem !important}
+		
+		</style>
+
+	</head>
+
+	<body>
+		<section id="app" class="main hgt_full flex_column">
+			<header class="hgt07rem l-pad20 bg-fff between-center">
+				<div class="wid12rem center">
+					<img class="wid014rem" src="../img/slice/icon-back.png"/>
+				</div>
+				<h3 class="font28r">详情</h3>
+				<div @click="openTab" class="wid12rem center-end">
+				<!-- <div @click="shareAction(detail.sTitle, url)" class="wid12rem center-end"> -->
+					<img class="wid03rem" src="../img/slice/icon_share.png"/>
+				</div>
+			</header>
+			<section class="flex_1 overflow_auto bg-fff font24r relative">
+				<div class="con font24r">
+					<div class="zxList block p-b-20r bg-fff">
+						<div class="hgt34rem wid100 coverImg" v-if="detail && detail.sImageSrc" :style="{backgroundImage: 'url(' + detail.sImageSrc + ')'}"></div>
+						<h4 class="l-h-05rem mt01 l-pad20 font26r only_line wid100 font-w6" v-cloak>{{detail.sTitle}}</h4>
+						<div class="between-center l-pad20 l-h-04rem">
+							<p class="wid30rem only_line" v-cloak>{{detail.sTag}}</p>
+							<div class="center">
+								<p class="color-999" v-if="detail.dCreateTime" v-text="tTime(detail.dCreateTime)"></p>
+							</div>
+						</div>
+					</div>
+					<p class="linegray"></p>
+					<div class="bg-fff wid100">
+						<div style="height: .8rem;" class="detailNav around-center font24r l-pad20 flex_dom flex_item_mid">
+							<span class="deActive flex_1 text-center">详情</span>
+							<span class="grayline"></span>
+							<span class="flex_1 text-center" v-cloak>评论({{commentList.length}})</span>
+						</div>
+                        <img style="width: 6.4rem; height: 1px;display:block" src="../img/slice/line2.png" />
+						<div class="Con">
+							<div class="detlArea p-t-10r p-b-10r">
+								<div class="Decontent l-pad20 color-666" v-html="detail.sContent">
+									<!-- <p>6月26日的大暴雨，让西安市长安区老区委十字形成了小河般的积水。大雨中，一位身患残疾的大爷因下坡速度太快刹不住车，跌到了水沟里 ，在这里疏导交通的长安大队城区中队交警，立即上前搀扶，将大爷抱到马路对面，然后把他的自行车从</p>
+									<img src="../img/miaosha1.png"/> -->
+								</div>
+							</div>
+							<div class="detlArea l-pad20 hide p-b-10r">
+								<div class="hgt1rem border-b-eee between-center">
+									<img class="hgt05rem wid05rem radius_half" :src="(memberInfo && memberInfo.sImageSrc) ? memberInfo.sImageSrc : '../img/slice/defaultHeader.png'"/>
+									<div class="commentArea between-center l-pad10">
+										<input v-model="commentCtn" type="text" class="commentInput" name="" placeholder="请输入评论" value="" />
+										<button @click="submitComment(0,'')" class="hgt05rem wid05rem bg-ffa127 color-fff font20r radius_half">评论</button>
+									</div>
+								</div>
+								<div class="commentLists">
+									<div v-for="item in commentList" class="commentList border-b-eee">
+										<div class="flex_dom pv02 wid100">
+											<div class="cur_head coverImg" v-if="item.sImageSrc" :style="{backgroundImage: 'url(' + (item.sImageSrc && memberInfo? item.sImageSrc : '../img/slice/defaultHeader.png') + ')'}"></div>
+											<div class="flex_1 ph02">
+												<div class="l-h-04rem" v-if="item.iTarMemberID == 0" v-cloak>{{item.sNickname}}：{{item.sContent}}</div>
+												<div class="l-h-04rem" v-else v-cloak>{{item.sNickname}}&nbsp;<span class="color-blue">回复</span>&nbsp;{{item.sTarNickname}}：{{item.sContent}}</div>
+												<div class="font22r between-center">
+													<p class="color-999" v-text="tTime(item.dCreateTime)"></p>
+													<button @click="openReply(item.iMemberID, item.sNickname)" class="underline color-ffa127">回复</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div style="top:0;position:relative; height: 2.5rem;" class="no_data m-t-90r">
+				                        <p class="color-999">暂无数据</p>
+				                    </div>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<!-- 回复弹窗 -->
+			<div class="replyBox">
+				<div style="height: calc(100% - 3.5rem)" @click="closeReply"></div>
+				<div style="bottom: 0;left: 0;" class="bg-fff hgt35rem abolute wid100">
+					<textarea v-model="replyCotent" placeholder="回复：" class="pad20r font24r"></textarea>
+					<button @click="reply" class="zyl-btn2">回复</button>
+				</div>
+			</div>
+			<!-- 分享面板 -->
+			<div id="shareTab">
+				<div class="bg-fff share-wrap">
+					<div class="flex_dom flex_item_mid text-center flex_item_center m-t-20r">
+						<img style="width: .8rem" src="../img/slice/line.png" alt="">
+						<span class="p_both20r font24r color-666">分享到</span>
+						<img style="width: .8rem" src="../img/slice/line.png" alt="">
+					</div>
+					<div @click="shareAction(detail.sTitle, sUrl, 0)" class="flex_dom flex_item_mid flex_item_center m-t-25r">
+						<div class="text-center m-r-50r">
+							<img style="width: 1rem" src="../img/slice/wx.png" alt="">
+							<p class="font22r color-333">微信好友</p>
+						</div>
+						<div @click="shareAction(detail.sTitle, sUrl, 1)" class="text-center">
+							<img style="width: 1rem" src="../img/slice/friendcircle.png" alt="">
+							<p class="font22r color-333">朋友圈</p>
+						</div>
+					</div>
+				</div>
+				<button class="close-btn" @click="closeShareTab">暂不分享</button>
+			</div>
+		</section>
+	</body>
+<script type="text/javascript" src="../lib/jquery.1.11.3.min.js"></script>
+<script type="text/javascript" src="../lib/uploadPreview.js"></script>
+<script type="text/javascript" src="../lib/form-check.js"></script>
+<script type="text/javascript" src="../lib/swiper.min.js"></script>
+<script type="text/javascript" src="../lib/con_js.6.23.js"></script>	
+<script type="text/javascript" src="../lib/page.js"></script>	
+<script type="text/javascript" src="../lib/vue.js"></script>	
+<script src="../lib/touchSelect.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+    //getUserInfo()
+	var app = new Vue({
+		el: "#app",
+		data: {
+			detail: {},
+			iArticleID: GetRequest().id,
+			commentList: [],
+			userInfo: JSON.parse(localStorage.userInfo),
+			commentCtn: "",
+			replyCotent: "",
+			url: location.href,
+			sUrl: this.hostIP + location.pathname + location.search,
+            hostIP: '',
+			memberInfo: {
+				sImageSrc: "",
+
+			}
+		},
+		methods: {
+			tTime: function(time){
+				var date3 = new Date().toLocaleDateString()  //  今天
+				var date4 = new Date(time.replace(/-/g,'/') ).toLocaleDateString() //  获取的时间
+				var date3Yaer = parseInt(date3.split('/')[0])
+				var date4Yaer = parseInt(date4.split('/')[0])
+				if(date3Yaer == date4Yaer){
+				} else {
+					return time.substring(0,16)
+				}
+				var date1 = new Date().toDateString()	//  今天
+				var date2 = new Date(time.replace(/-/g,'/') ).toDateString() //  获取的时间
+				if(date1 == date2){
+					return time.split(' ')[1].substring(0,5)
+				} else {
+					return time.substring(5).substring(0,11)
+				}
+			},
+			tTime2: function(time){
+				time = time.replace(/-/g,'.').substring(0,16)
+				return time
+			},
+			getComment: function(){
+				$.ajax({
+					type: 'post',
+					url: host + 'ar.getlist',
+					data: {iArticleID: this.iArticleID},
+					success: function(res){
+						app.commentList = res.data.reverse()
+						// console.log(app.commentList)
+					}
+				})
+			},
+			submitComment: function(iTarMemberID, sTarNickname){
+				// 是微信登录的
+				//if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+				//	bindPhone()
+				//} else{
+				//	$.ajax({
+				//		type: 'post',
+				//		url: host + 'article.addcmt',
+				//		data: {
+				//			iArticleID: app.iArticleID, 
+				//			iMemberID: app.userInfo.ID,
+				//			sNickname: app.memberInfo.sNickname || app.memberInfo.sName.substring(0,1) + 'xx',
+				//			sImageSrc: app.memberInfo.sImageSrc,
+				//			sContent: app.commentCtn || app.replyCotent,
+				//			iTarMemberID,
+				//			sTarNickname
+				//		},
+				//		success: function(res){
+				//			if(res.success){
+				//				app.getComment()
+				//			} else {
+				//				go_alert2(res.message)
+				//			}
+							
+				//		}
+				//	})
+				//}	
+			    //app.commentCtn = ""
+			    if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+			        $.ajax({
+			            type: 'post',
+			            url: host + 'member.wechatlogin',
+			            data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+			            success: function (res) {
+			                //if (res.success) {
+			                if (res.code == 403) {
+			                    go_alert2('账号审核中，请耐心等待', setTimeout(function () {
+			                        //location.href = 'login.html'
+			                        return
+			                    }, 2000))
+			                }
+			                else if (res.code == 404) {
+			                    localStorage.removeItem('userInfo');
+			                    bindPhone()
+			                }
+			                else if (res.data.bIsReviewed == 1) {
+			                    var userInfo = res.data
+			                    localStorage.userInfo = JSON.stringify(userInfo)
+			                    if (app.commentCtn || app.replyCotent) {
+			                        $.ajax({
+			                        		type: 'post',
+			                        		url: host + 'article.addcmt',
+			                        		data: {
+			                        			iArticleID: app.iArticleID, 
+			                        			iMemberID: app.userInfo.ID,
+			                        			sNickname: app.memberInfo.sNickname || app.memberInfo.sName.substring(0,1) + 'xx',
+			                        			sImageSrc: app.memberInfo.sImageSrc,
+			                        			sContent: app.commentCtn || app.replyCotent,
+			                        			iTarMemberID,
+			                        			sTarNickname
+			                        		},
+			                        		success: function(res){
+			                        		    if (res.success) {
+			                        		        go_alert2(res.message)
+			                        		        app.commentCtn = ''
+			                        		        app.replyCotent = ''
+			                        				app.getComment()
+			                        			} else {
+			                        				go_alert2(res.message)
+			                        			}
+							
+			                        		}
+			                        })
+			                    }
+			                }
+			                
+			            }
+			        })
+			    } else {
+			        if (app.commentCtn || app.replyCotent) {
+			        
+			            $.ajax({
+			                type: 'post',
+			                url: host + 'article.addcmt',
+			                data: {
+			                    iArticleID: app.iArticleID,
+			                    iMemberID: app.userInfo.ID,
+			                    sNickname: app.memberInfo.sNickname || app.memberInfo.sName.substring(0, 1) + 'xx',
+			                    sImageSrc: app.memberInfo.sImageSrc,
+			                    sContent: app.commentCtn || app.replyCotent,
+			                    iTarMemberID,
+                                sTarNickname
+			                    },
+			                        success: function(res) {
+                                if(res.success) {
+                                    go_alert2(res.message)
+                                    app.commentCtn = ''
+                                    app.replyCotent = ''
+                                    app.getComment()
+			                    } else {
+                                    go_alert2(res.message)
+                                }
+
+			                        }
+			            })
+			        }
+			    }
+
+			},
+			openReply: function(iTarMemberID, sTarNickname){
+				// 是微信登录的
+				//if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+				//	bindPhone()
+				//} else {
+				//	$(".replyBox").show()
+				//	app.iTarMemberID = iTarMemberID
+				//	app.sTarNickname = sTarNickname
+			    //}
+			    if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+			        $.ajax({
+			            type: 'post',
+			            url: host + 'member.wechatlogin',
+			            data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+			            success: function (res) {
+			                //if (res.success) {
+			                if (res.code == 403) {
+			                    go_alert2('账号审核中，请耐心等待', setTimeout(function () {
+			                        //location.href = 'login.html'
+			                        return
+			                    }, 2000))
+			                }
+			                else if (res.code == 405) {
+			                    go_alert2('账号审核被拒绝，请重新提交申请', setTimeout(function () {
+			                        bindPhone()
+			                    }, 2000))
+
+			                }
+			                else if (res.code == 404) {
+			                    localStorage.removeItem('userInfo');
+			                    bindPhone()
+			                }
+			                else if (res.data.bIsReviewed == 1) {
+			                    var userInfo = res.data
+			                    localStorage.userInfo = JSON.stringify(userInfo)
+			                    $(".replyBox").show()
+			                    app.iTarMemberID = iTarMemberID
+			                    app.sTarNickname = sTarNickname
+			                }
+			            }
+			        })
+			    } else {
+			        $(".replyBox").show()
+			        app.iTarMemberID = iTarMemberID
+			        app.sTarNickname = sTarNickname
+			    }
+			},
+			closeReply: function(){
+				$(".replyBox").hide()
+				app.iTarMemberID = 0
+				app.sTarNickname = ""
+				app.replyCotent = ""
+			},
+			reply: function(){
+				app.submitComment(app.iTarMemberID, app.sTarNickname)
+				app.closeReply()
+			},
+			shareAction: function(sTitle, sUrl, iType){
+				console.log(sTitle, sUrl)
+				var u = navigator.userAgent;
+				var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+				var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+				if (isAndroid) {
+					WebViewJavascriptBridge.shareAction(sTitle, sUrl, iType)
+				}
+				if (isiOS) {
+				    try {
+				        webkit.messageHandlers.shareAction.postMessage({ title: sTitle, url: sUrl, type: iType })
+				    }
+				    catch (e) { }
+				}
+				$("#shareTab").hide()
+			},
+			openTab: function(){
+				$("#shareTab").show()
+			},
+			closeShareTab: function(){
+				$("#shareTab").hide()
+			},
+			getMemberInfo: function () {
+				// 是微信登录的
+				if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+					this.memberInfo = JSON.parse(localStorage.wxInfo)
+				} else {
+					$.ajax({
+						type: 'post',
+						url: host + 'member.get',
+						data: { iMemberID: this.userInfo.ID },
+						success: function (res) {
+							app.memberInfo = res.data
+						}
+					})
+				}
+			},
+		},
+		mounted: function () {
+            this.hostIP = hostIP
+            console.log(location)
+			$.ajax({
+				type: 'post',
+				url: host + 'article.get',
+				data: {iArticleID: this.iArticleID},
+				success: function(res){
+					app.detail = res.data
+				}
+			}),
+			this.getMemberInfo()
+			this.getComment()
+		},
+	})
+
+	$('.detailNav span').click(function(){
+		$(this).addClass('deActive').siblings().removeClass('deActive');
+	    var _index = $(this).index();
+	    if(_index){
+	    	$(".detlArea").eq(1).show().siblings().hide();
+	    }else{
+	    	$(".detlArea").eq(0).show().siblings().hide();
+	    }
+	    
+	})
+	//判断是否微信登录
+	function isWeixin(href) {
+	    //if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+	    //    bindPhone()
+	    //} else {
+	    //    location.href = href;
+	    //}
+	    if ((!localStorage.userInfo || localStorage.userInfo == '{}')) {
+	        $.ajax({
+	            type: 'post',
+	            url: host + 'member.wechatlogin',
+	            data: { sOpenID: JSON.parse(localStorage.wxInfo).sOpenID },
+	            success: function (res) {
+	                //if (res.success) {
+	                if (res.code == 403) {
+	                    go_alert2('账号审核中，请耐心等待', setTimeout(function () {
+	                        //location.href = 'login.html'
+	                        return
+	                    }, 2000))
+	                }
+	                else if (res.code == 405) {
+	                    go_alert2('账号审核被拒绝，请重新提交申请', setTimeout(function () {
+	                        bindPhone()
+	                    }, 2000))
+	                } else if (res.data.bIsReviewed == 1) {
+	                    var userInfo = res.data
+	                    localStorage.userInfo = JSON.stringify(userInfo)
+	                    location.href = href
+	                }
+	                else if (res.code == 404) {
+	                    localStorage.removeItem('userInfo');
+	                    bindPhone()
+	                }
+	            }
+	        })
+	    } else {
+	        location.href = href
+	    }
+	}
+</script>
+ 
+</html>
